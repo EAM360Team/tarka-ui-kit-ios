@@ -19,6 +19,7 @@ public struct TUIAppTopBar: View {
   var trailingButton: TUIIconButton?
   @ObservedObject var searchBarVM: TUISearchBarViewModel
 
+  @Environment(\.tuiSafeAreaInsets) private var safeAreaInsets
   @Environment(\.dismiss) private var dismiss
 
   public init(barStyle: BarStyle, trailingButton: TUIIconButton? = nil) {
@@ -42,9 +43,9 @@ public struct TUIAppTopBar: View {
       barView
         .frame(
           maxWidth: .infinity,
-          minHeight: barStyle.minHeight - divider.height,
+          minHeight: minHeight - divider.height,
           alignment: .leading)
-        .padding(.top, barStyle.topPadding)
+        .padding(.top, topPadding)
 
       divider
     }
@@ -173,6 +174,39 @@ extension TUIAppTopBar {
     }
   }
 }
+
+// MARK: - Top Bar Height
+
+extension TUIAppTopBar {
+  
+  private var minHeight: CGFloat {
+    
+    if case .titleBar(let barItem) = barStyle,
+       case .none = barItem.leftButton,
+       barItem.rightButtons.isEmpty {
+      return 60
+    }
+    return 64 + topPadding
+  }
+  
+  private var topPadding: CGFloat {
+    
+    // It is to give extra padding for dynamic island supported devices
+    // as it has more top inset than others that causes padding issue
+    let expectedSafeArea: CGFloat = 50
+    let topInsets = safeAreaInsets.top
+    guard topInsets > expectedSafeArea else {
+      return 0
+    }
+    return topInsets - expectedSafeArea
+  }
+}
+
+public extension EnvironmentValues {
+  @Entry var tuiSafeAreaInsets: EdgeInsets = .init()
+}
+
+// MARK: - Preview
 
 struct TUIAppTopBar_Previews: PreviewProvider {
   
