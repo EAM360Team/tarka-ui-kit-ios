@@ -15,13 +15,20 @@ struct SearchTextField: View {
   
   var body: some View {
     
-    TextField("", text: $searchBarVM.searchItem.text,
-              prompt: Text(searchBarVM.searchItem.placeholder).foregroundColor(.inputTextDim))
-    .introspect(.textField, on: .iOS(.v16, .v17, .v18, .v26)) { textField in
-      textField.addDoneButtonOnKeyboard {
-        if (textField.text?.isEmpty ?? true) == false {
-          performSearch()
-        }
+    TextField(
+      "",
+      text: $searchBarVM.searchItem.text,
+      prompt:
+        Text(searchBarVM.searchItem.placeholder)
+        .foregroundColor(.inputTextDim)
+    )
+    .addDoneButtonOnKeyboard {
+      // resign search
+      searchBarVM.isEditing = false
+      searchBarVM.isFocused = false
+      // perform search
+      if searchBarVM.searchItem.text.isEmpty == false {
+        performSearch()
       }
     }
     .focused($isFocused)

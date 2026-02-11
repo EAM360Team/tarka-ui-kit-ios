@@ -126,18 +126,15 @@ struct TUIInputTextContentView: View {
         if isSecureField {
           SecureField(placeholder,
                       text: $inputItem.value)
-          .introspect(.textField, on: .iOS(.v16, .v17, .v18, .v26)) { textField in
-            textField.addDoneButtonOnKeyboard()
-          }
         } else {
           TextField(placeholder,
                     text: $inputItem.value,
                     axis: .vertical)
-          .introspect(.textField, on: .iOS(.v16, .v17, .v18, .v26)) { textField in
-            textField.addDoneButtonOnKeyboard()
-          }
           .textFieldStyle(.plain)
         }
+      }
+      .addDoneButtonOnKeyboard {
+        isFocused = false
       }
       .onChange(of: inputItem.value) { newValue in
         limitText(newValue)
