@@ -69,6 +69,7 @@ private protocol KeyboardDoneAttachable: UIResponder {
 extension UITextField: KeyboardDoneAttachable {}
 extension UITextView: KeyboardDoneAttachable {}
 
+@MainActor
 private extension KeyboardDoneAttachable {
   
   private static var doneToolbarTag: Int { 987654 }
