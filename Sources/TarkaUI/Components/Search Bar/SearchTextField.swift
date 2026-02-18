@@ -27,7 +27,7 @@ struct SearchTextField: View {
       searchBarVM.isEditing = false
       searchBarVM.isFocused = false
       // perform search
-      if searchBarVM.searchItem.text.isEmpty == false {
+      if !searchBarVM.searchItem.text.isEmpty {
         performSearch()
       }
     }
