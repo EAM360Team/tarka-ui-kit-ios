@@ -51,8 +51,9 @@ public extension View {
       }
   }
   
+  
+  /// Warns developer if the iOS version is not tested with this feature
   private func warnIfUntested() {
-    
     IOSCompatibilityGuard.warnIfUntested(
       feature: .keyboardDoneBar,
       maxTestedMajor: .v26
@@ -78,6 +79,16 @@ private extension KeyboardDoneAttachable {
     onClicked: (() -> Void)? = nil
   ) {
     
+    // iOS 26+ specific configuration to avoid decimal keypad popover in iPad
+    if #available(iOS 26.0, *) {
+      if let textField = self as? UITextField {
+        textField.allowsNumberPadPopover = false
+      }
+      if let textView = self as? UITextView {
+        textView.allowsNumberPadPopover = false
+      }
+    }
+    
     // Prevent multiple injections
     if let toolbar = inputAccessoryView as? UIToolbar,
        toolbar.tag == Self.doneToolbarTag {
@@ -86,6 +97,7 @@ private extension KeyboardDoneAttachable {
     
     let toolbar = KeyboardDoneToolbar { [weak self] in
       onClicked?()
+      // Hide keyboard
       self?.resignFirstResponder()
     }
     
