@@ -132,6 +132,9 @@ struct TUIInputTextContentView: View {
           .textFieldStyle(.plain)
         }
       }
+      .addDoneButtonOnKeyboard {
+        isFocused = false
+      }
       .onChange(of: inputItem.value) { newValue in
         limitText(newValue)
       }
