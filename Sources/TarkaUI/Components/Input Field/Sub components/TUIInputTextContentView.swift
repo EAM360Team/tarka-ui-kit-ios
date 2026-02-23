@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import SwiftUIIntrospect
 
 /// This is SwiftUI View that displays title and text content for the `TUIInputField` view in the vertical stack.
 /// The view can be customized with different styles,
@@ -131,6 +132,9 @@ struct TUIInputTextContentView: View {
                     axis: .vertical)
           .textFieldStyle(.plain)
         }
+      }
+      .addDoneButtonOnKeyboard {
+        isFocused = false
       }
       .onChange(of: inputItem.value) { newValue in
         limitText(newValue)
