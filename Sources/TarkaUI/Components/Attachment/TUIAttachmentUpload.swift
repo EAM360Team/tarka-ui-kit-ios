@@ -40,6 +40,10 @@ public struct TUIAttachmentUpload: View {
       case .withDescription(let desc):
         titleView(inputStyle.title)
         detailView(desc)
+      case .subTitleWithDescription(let subTitle, let desc):
+        titleView(inputStyle.title)
+        detailView(subTitle)
+        detailView(desc)
       }
     }
     .accessibilityElement(children: .contain)
@@ -120,13 +124,16 @@ public struct TUIAttachmentUpload: View {
       .accessibilityIdentifier(Accessibility.title)
   }
   
-  private func detailView(_ title: String) -> some View {
-    Text(title)
-      .font(.body8)
-      .foregroundStyle(Color.inputTextDim)
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .frame(height: Spacing.custom(14))
-      .accessibilityIdentifier(Accessibility.description)
+  @ViewBuilder
+  private func detailView(_ title: String?) -> some View {
+    if let title, !title.isEmpty {
+      Text(title)
+        .font(.body8)
+        .foregroundStyle(Color.inputTextDim)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(height: Spacing.custom(14))
+        .accessibilityIdentifier(Accessibility.description)
+    }
   }
 }
 
@@ -171,6 +178,7 @@ public extension TUIAttachmentUpload {
   enum Style {
     case onlyTitle
     case withDescription(String)
+    case subTitleWithDescription(_ subTitle: String?, description: String)
   }
   
   enum ImageStyle {
