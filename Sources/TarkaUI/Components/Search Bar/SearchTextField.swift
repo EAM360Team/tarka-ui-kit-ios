@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+import SwiftUIIntrospect
 
 struct SearchTextField: View {
   
@@ -32,6 +32,15 @@ struct SearchTextField: View {
       .onSubmit(performSearch)
       .isEnabled(!searchBarVM.needDelaySearch) {
         $0.onChange(of: searchBarVM.searchItem.text, perform: updateSearchText)
+      }
+      .addDoneButtonOnKeyboard {
+        // resign search
+        searchBarVM.isEditing = false
+        searchBarVM.isFocused = false
+        // perform search
+        if !searchBarVM.searchItem.text.isEmpty {
+          performSearch()
+        }
       }
   }
   
