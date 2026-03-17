@@ -16,10 +16,14 @@ struct SearchTextField: View {
   var body: some View {
     
     TextField("", text: $searchBarVM.searchItem.text,
-              prompt: Text(searchBarVM.searchItem.placeholder).foregroundColor(.inputTextDim))
+              prompt: Text(searchBarVM.searchItem.placeholder)
+      .foregroundColor(.inputTextDim))
       .focused($isFocused)
       .onChange(of: isFocused) {
         searchBarVM.isEditing = $0
+        guard !isFocused, searchBarVM.needDelaySearch else { return }
+        // If delay search is enabled, on focus removed, perform search
+        performSearch()
       }
       .onChange(of: searchBarVM.isEditing, perform: { value in
         if value != isFocused {
@@ -27,9 +31,15 @@ struct SearchTextField: View {
           searchBarVM.isFocused = value
         }
       })
+      .onAppear {
+        guard searchBarVM.searchButtonClicked != nil else { return }
+        isFocused = true
+      }
+      .onDisappear {
+        searchBarVM.searchButtonClicked = nil
+      }
       .accessibilityIdentifier(Accessibility.root)
       .submitLabel(searchBarVM.needDelaySearch ? .search : .return)
-      .onSubmit(performSearch)
       .isEnabled(!searchBarVM.needDelaySearch) {
         $0.onChange(of: searchBarVM.searchItem.text, perform: updateSearchText)
       }
