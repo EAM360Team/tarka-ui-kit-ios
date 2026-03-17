@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftUIIntrospect
 
 public struct TUIEmailSubjectField: View {
   @Binding public var text: String
@@ -26,6 +27,7 @@ public struct TUIEmailSubjectField: View {
           .font(.body7)
           .foregroundColor(.outline)
       )
+      .addDoneButtonOnKeyboard()
       .font(.heading7)
       .padding(.leading, Spacing.custom(24))
       .padding(.trailing, Spacing.halfHorizontal)
