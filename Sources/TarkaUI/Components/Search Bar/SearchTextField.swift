@@ -30,12 +30,10 @@ struct SearchTextField: View {
     .focused($isFocused)
     .onChange(of: isFocused) {
       searchBarVM.isEditing = $0
-      guard !isFocused,
-            searchBarVM.needDelaySearch ||
-              !searchBarVM.searchItem.text.isEmpty else {
-        return
-      }
-      // If delay search is enabled, on focus removed, perform search
+      guard !isFocused else { return }
+      // If search on done is enabled,
+      // when focus is removed ie. keyboard hides, perform search
+      guard searchBarVM.needDelaySearch else { return }
       performSearch()
     }
     .onChange(of: searchBarVM.isEditing, perform: { value in
@@ -59,7 +57,6 @@ struct SearchTextField: View {
   }
   
   private func performSearch() {
-    guard searchBarVM.needDelaySearch else { return }
     searchBarVM.onEditing(searchBarVM.searchItem.text)
     searchBarVM.searchText = searchBarVM.searchItem.text
   }
