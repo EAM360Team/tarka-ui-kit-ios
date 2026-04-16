@@ -12,7 +12,8 @@ import Kingfisher
 public struct TUIAttachmentUpload: View {
   
   private var inputStyle: InputStyle
-  
+  @SwiftUI.Environment(\.displayScale) private var displayScale
+
   public init(_ title: String,
               imageStyle: ImageStyle,
               style: TUIAttachmentUpload.Style = .onlyTitle) {
@@ -55,8 +56,8 @@ public struct TUIAttachmentUpload: View {
         }
         .loadDiskFileSynchronously(false)
         .downsampling(size: CGSize(
-          width: inputStyle.imageSize.width * UIScreen.main.scale,
-          height: Spacing.custom(40) * UIScreen.main.scale))
+          width: inputStyle.imageSize.width * displayScale,
+          height: Spacing.custom(40) * displayScale))
         .cacheOriginalImage()
         .resizable()
         .clipShape(RoundedRectangle(cornerRadius: Spacing.halfHorizontal))
