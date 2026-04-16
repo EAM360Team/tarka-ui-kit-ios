@@ -53,6 +53,11 @@ public struct TUIAttachmentUpload: View {
         .placeholder {
           Image(fluent: placeholder)
         }
+        .loadDiskFileSynchronously(false)
+        .downsampling(size: CGSize(
+          width: inputStyle.imageSize.width * UIScreen.main.scale,
+          height: Spacing.custom(40) * UIScreen.main.scale))
+        .cacheOriginalImage()
         .resizable()
         .clipShape(RoundedRectangle(cornerRadius: Spacing.halfHorizontal))
         .frame(width: inputStyle.imageSize.width, height: Spacing.custom(40))
