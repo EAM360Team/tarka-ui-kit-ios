@@ -54,7 +54,6 @@ public struct TUIAttachmentUpload: View {
         .placeholder {
           Image(fluent: placeholder)
         }
-        .loadDiskFileSynchronously(false)
         .downsampling(size: CGSize(
           width: inputStyle.imageSize.width * displayScale,
           height: Spacing.custom(40) * displayScale))
