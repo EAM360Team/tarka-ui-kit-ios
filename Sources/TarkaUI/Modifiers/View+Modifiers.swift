@@ -82,8 +82,9 @@ public extension View {
     isEnabled: Bool = true,
     @TUIIconButtonBuilder
     iconButtons: @escaping (() -> [TUIIconButton]?) = { nil }) -> some View {
-      let textRow = TUITextRow(title, style: style, isRequired: isRequired)
+      let textRow = TUITextRow(title, style: style)
         .textColor(textColor)
+        .isRequired(isRequired)
       
       if isEnabled {
         NavigationLink(destination: destinationView, label: {

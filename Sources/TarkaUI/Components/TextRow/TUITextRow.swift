@@ -18,23 +18,27 @@ public struct TUITextRow: View {
   @TUIIconButtonBuilder var iconButtons: (() -> [TUIIconButton])
 
   public var textColor: Color = .onSurface
-  public var isRequired: Bool = false
+  private var isRequired: Bool = false
 
   /// Creates a text row with the specified title and style.
   ///
   /// - Parameters:
   ///   - title: The title to display in the text row.
   ///   - style: The style to use to display the text row. The default value is `.onlyTitle`.
-  ///   - isRequired: When `true`, appends a red `" *"` suffix to the title.
   ///
   public init(_ title: any StringProtocol,
-              style: TUITextRow.Style,
-              isRequired: Bool = false) {
+              style: TUITextRow.Style) {
     self.title = title
     self.style = style
-    self.isRequired = isRequired
     self.wrapperIcon = { nil }
     self.iconButtons = { [] }
+  }
+
+  /// When `true`, appends a `" *"` suffix to the title to indicate a mandatory field.
+  public func isRequired(_ value: Bool) -> Self {
+    var newView = self
+    newView.isRequired = value
+    return newView
   }
   
   public var body: some View {
