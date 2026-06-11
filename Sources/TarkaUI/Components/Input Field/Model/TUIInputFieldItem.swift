@@ -27,7 +27,6 @@ public struct TUIInputFieldItem: Equatable, Hashable {
   ///   - style: A `InputFieldStyle` instance that holds the style to render its Views
   ///   - title: A string that holds the title
   ///   - value: A string that holds the value ie. content description
-  ///   - isRequired: When `true`, renders a red `*` suffix on the title to indicate a mandatory field
   public init(
     style: TUIInputFieldStyle,
     title: String = "", value: String = "") {

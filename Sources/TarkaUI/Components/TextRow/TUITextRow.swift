@@ -19,6 +19,7 @@ public struct TUITextRow: View {
 
   public var textColor: Color = .onSurface
   private var isRequired: Bool = false
+  private var titleString: String { String(title) }
 
   /// Creates a text row with the specified title and style.
   ///
@@ -73,25 +74,19 @@ public struct TUITextRow: View {
   private var titleView: some View {
     switch style {
     case .onlyTitle:
-      requiredTitle(font: .heading7)
+      Text(isRequired ? titleString + " *" : titleString)
+        .font(.heading7)
+        .foregroundColor(.inputTextDim)
         .frame(minHeight: 18)
         .padding(.vertical, Spacing.custom(11))
         .accessibilityIdentifier(Accessibility.title)
 
     default:
-      requiredTitle(font: .body8)
+      Text(isRequired ? titleString + " *" : titleString)
+        .font(.body8)
+        .foregroundColor(.inputTextDim)
         .frame(minHeight: 14)
         .accessibilityIdentifier(Accessibility.title)
-    }
-  }
-
-  @ViewBuilder
-  private func requiredTitle(font: Font) -> some View {
-    if isRequired {
-      (Text(title).foregroundColor(.inputTextDim) + Text(" *").foregroundColor(.inputTextDim))
-        .font(font)
-    } else {
-      Text(title).font(font).foregroundColor(.inputTextDim)
     }
   }
   
