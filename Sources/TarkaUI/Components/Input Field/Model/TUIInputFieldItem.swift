@@ -30,13 +30,11 @@ public struct TUIInputFieldItem: Equatable, Hashable {
   ///   - isRequired: When `true`, renders a red `*` suffix on the title to indicate a mandatory field
   public init(
     style: TUIInputFieldStyle,
-    title: String = "", value: String = "",
-    isRequired: Bool = false) {
+    title: String = "", value: String = "") {
 
       self.style = style
       self.title = title
       self.value = value
-      self.isRequired = isRequired
     }
   
   public var hasTitleAndValue: Bool {

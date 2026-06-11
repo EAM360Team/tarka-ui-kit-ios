@@ -83,31 +83,21 @@ struct TUIInputTextContentView: View {
     let title = inputItem.title
     switch inputItem.style {
     case .onlyTitle:
-      requiredTitle(title: title, font: .body6)
+      Text(inputItem.isRequired ? "\(title) *" : title)
+        .font(.body6)
         .frame(minHeight: 20)
         .frame(alignment: .leading)
         .accessibilityIdentifier(Accessibility.title)
 
     case .titleWithValue:
-      requiredTitle(title: title, font: .body8)
+      Text(inputItem.isRequired ? "\(title) *" : title)
+        .font(.body8)
         .frame(minHeight: 14)
         .frame(alignment: .leading)
         .accessibilityIdentifier(Accessibility.title)
 
     case .onlyValue:
       EmptyView()
-    }
-  }
-
-  @ViewBuilder
-  private func requiredTitle(title: String, font: Font) -> some View {
-    if inputItem.isRequired {
-      (Text(title).foregroundColor(.inputTextDim) + Text(" *").foregroundColor(.inputTextDim))
-        .font(font)
-    } else {
-      Text(title)
-        .font(font)
-        .foregroundColor(.inputTextDim)
     }
   }
   
