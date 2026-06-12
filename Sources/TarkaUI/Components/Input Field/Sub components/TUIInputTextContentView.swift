@@ -83,14 +83,14 @@ struct TUIInputTextContentView: View {
     let title = inputItem.title
     switch inputItem.style {
     case .onlyTitle:
-      Text(inputItem.isRequired ? "\(title) *" : title)
+      Text(inputItem.isMandatory ? "\(title) *" : title)
         .font(.body6)
         .frame(minHeight: 20)
         .frame(alignment: .leading)
         .accessibilityIdentifier(Accessibility.title)
 
     case .titleWithValue:
-      Text(inputItem.isRequired ? "\(title) *" : title)
+      Text(inputItem.isMandatory ? "\(title) *" : title)
         .font(.body8)
         .frame(minHeight: 14)
         .frame(alignment: .leading)
