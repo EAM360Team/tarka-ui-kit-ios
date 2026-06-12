@@ -29,11 +29,13 @@ public struct TUIInputFieldItem: Equatable, Hashable {
   ///   - value: A string that holds the value ie. content description
   public init(
     style: TUIInputFieldStyle,
-    title: String = "", value: String = "") {
+    title: String = "", value: String = "",isMandatory: Bool = false
+  ) {
 
       self.style = style
       self.title = title
       self.value = value
+      self.isMandatory = isMandatory
     }
   
   public var hasTitleAndValue: Bool {
