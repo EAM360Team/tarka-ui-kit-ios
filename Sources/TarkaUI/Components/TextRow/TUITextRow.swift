@@ -13,12 +13,14 @@ import SwiftUI
 public struct TUITextRow: View {
   public var title: any StringProtocol
   public var style: Style
-  
+
   @ViewBuilder var wrapperIcon: (() -> TUIWrapperIcon?)
   @TUIIconButtonBuilder var iconButtons: (() -> [TUIIconButton])
-  
+
   public var textColor: Color = .onSurface
-  
+  private var isRequired: Bool = false
+  private var titleString: String { String(title) }
+
   /// Creates a text row with the specified title and style.
   ///
   /// - Parameters:
@@ -31,6 +33,13 @@ public struct TUITextRow: View {
     self.style = style
     self.wrapperIcon = { nil }
     self.iconButtons = { [] }
+  }
+
+  /// When `true`, appends a `" *"` suffix to the title to indicate a mandatory field.
+  public func isRequired(_ value: Bool) -> Self {
+    var newView = self
+    newView.isRequired = value
+    return newView
   }
   
   public var body: some View {
@@ -65,15 +74,15 @@ public struct TUITextRow: View {
   private var titleView: some View {
     switch style {
     case .onlyTitle:
-      Text(title)
+      Text(isRequired ? titleString + " *" : titleString)
         .font(.heading7)
-        .foregroundColor(textColor)
+        .foregroundColor(.inputTextDim)
         .frame(minHeight: 18)
         .padding(.vertical, Spacing.custom(11))
         .accessibilityIdentifier(Accessibility.title)
-      
+
     default:
-      Text(title)
+      Text(isRequired ? titleString + " *" : titleString)
         .font(.body8)
         .foregroundColor(.inputTextDim)
         .frame(minHeight: 14)
