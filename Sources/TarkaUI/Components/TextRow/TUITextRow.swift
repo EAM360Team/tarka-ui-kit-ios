@@ -18,7 +18,7 @@ public struct TUITextRow: View {
   @TUIIconButtonBuilder var iconButtons: (() -> [TUIIconButton])
 
   public var textColor: Color = .onSurface
-  private var isRequired: Bool = false
+  private var isMandatory: Bool = false
   private var titleString: String { String(title) }
 
   /// Creates a text row with the specified title and style.
@@ -36,9 +36,9 @@ public struct TUITextRow: View {
   }
 
   /// When `true`, appends a `" *"` suffix to the title to indicate a mandatory field.
-  public func isRequired(_ value: Bool) -> Self {
+  public func isMandatory(_ value: Bool) -> Self {
     var newView = self
-    newView.isRequired = value
+    newView.isMandatory = value
     return newView
   }
   
@@ -74,7 +74,7 @@ public struct TUITextRow: View {
   private var titleView: some View {
     switch style {
     case .onlyTitle:
-      Text(isRequired ? titleString + " *" : titleString)
+      Text(isMandatory ? titleString + " *" : titleString)
         .font(.heading7)
         .foregroundColor(.inputTextDim)
         .frame(minHeight: 18)
@@ -82,7 +82,7 @@ public struct TUITextRow: View {
         .accessibilityIdentifier(Accessibility.title)
 
     default:
-      Text(isRequired ? titleString + " *" : titleString)
+      Text(isMandatory ? titleString + " *" : titleString)
         .font(.body8)
         .foregroundColor(.inputTextDim)
         .frame(minHeight: 14)

@@ -20,7 +20,7 @@ public struct TUIInputFieldItem: Equatable, Hashable {
   public var style: TUIInputFieldStyle
   public var title: String = ""
   public var value: String = ""
-  public var isRequired: Bool = false
+  public var isMandatory: Bool = false
 
   /// Creates a `TUIInputFieldItem` object that holds the required values to render `TUIInputField` View
   /// - Parameters:
