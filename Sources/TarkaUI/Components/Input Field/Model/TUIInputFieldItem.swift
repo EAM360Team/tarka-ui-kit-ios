@@ -20,7 +20,8 @@ public struct TUIInputFieldItem: Equatable, Hashable {
   public var style: TUIInputFieldStyle
   public var title: String = ""
   public var value: String = ""
-  
+  public var isRequired: Bool = false
+
   /// Creates a `TUIInputFieldItem` object that holds the required values to render `TUIInputField` View
   /// - Parameters:
   ///   - style: A `InputFieldStyle` instance that holds the style to render its Views
@@ -29,7 +30,7 @@ public struct TUIInputFieldItem: Equatable, Hashable {
   public init(
     style: TUIInputFieldStyle,
     title: String = "", value: String = "") {
-      
+
       self.style = style
       self.title = title
       self.value = value
