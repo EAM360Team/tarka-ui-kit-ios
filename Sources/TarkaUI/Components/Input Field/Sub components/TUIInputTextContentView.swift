@@ -79,25 +79,23 @@ struct TUIInputTextContentView: View {
   
   @ViewBuilder
   private var titleView: some View {
-    
+
     let title = inputItem.title
     switch inputItem.style {
     case .onlyTitle:
-      Text(title)
+      Text(inputItem.isMandatory ? "\(title) *" : title)
         .font(.body6)
-        .foregroundColor(.inputTextDim)
         .frame(minHeight: 20)
         .frame(alignment: .leading)
         .accessibilityIdentifier(Accessibility.title)
-      
+
     case .titleWithValue:
-      Text(title)
+      Text(inputItem.isMandatory ? "\(title) *" : title)
         .font(.body8)
-        .foregroundColor(.inputTextDim)
         .frame(minHeight: 14)
         .frame(alignment: .leading)
         .accessibilityIdentifier(Accessibility.title)
-      
+
     case .onlyValue:
       EmptyView()
     }
