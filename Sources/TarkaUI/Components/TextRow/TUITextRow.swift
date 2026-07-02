@@ -76,7 +76,7 @@ public struct TUITextRow: View {
     case .onlyTitle:
       Text(isMandatory ? titleString + " *" : titleString)
         .font(.heading7)
-        .foregroundColor(.inputTextDim)
+        .foregroundColor(textColor)
         .frame(minHeight: 18)
         .padding(.vertical, Spacing.custom(11))
         .accessibilityIdentifier(Accessibility.title)
