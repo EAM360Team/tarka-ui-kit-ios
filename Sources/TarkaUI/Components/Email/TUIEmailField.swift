@@ -27,8 +27,7 @@ public struct TUIEmailField: View {
   public var addAction: () -> Void
   public var removeAction: (String) -> Void
 
-  /// When `true`, the title is rendered with the error style.
-  private var isError = false
+  private var foregroundColor: Color = .outline
 
   @State private var emailGridWidth: CGFloat = 0.0
   
@@ -64,7 +63,7 @@ public struct TUIEmailField: View {
   private var labelView: some View {
     Text(label.title)
       .font(.body7)
-      .foregroundColor(isError ? .error : .outline)
+      .foregroundColor(foregroundColor)
       .padding(.top, 15)
       .padding(.leading, 24)
       .accessibilityIdentifier(Accessibility.label)
@@ -125,13 +124,13 @@ public struct TUIEmailField: View {
 }
 
 public extension TUIEmailField {
-  
-  /// Applies the error style to the field, rendering the title in the error color.
-  /// - Parameter value: A bool that decides whether the error style is applied.
-  /// - Returns: A `TUIEmailField` updated with the error style.
-  func showsError(_ value: Bool) -> Self {
+
+  /// Overrides the color used to render the title.
+  /// - Parameter color: The color to apply to the title. Defaults to `.outline`.
+  /// - Returns: A `TUIEmailField` updated with the given title color.
+  func foregroundColor(_ color: Color) -> Self {
     var view = self
-    view.isError = value
+    view.foregroundColor = color
     return view
   }
 }

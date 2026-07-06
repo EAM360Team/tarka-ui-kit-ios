@@ -12,9 +12,7 @@ public struct TUIEmailSubjectField: View {
   @Binding public var text: String
 
   private var title: String
-
-  /// When `true`, the title/placeholder is rendered with the error style.
-  private var isError = false
+  private var foregroundColor: Color = .outline
 
   public init(text: Binding<String>, title: String = "Subject") {
     self._text = text
@@ -28,7 +26,7 @@ public struct TUIEmailSubjectField: View {
         text: $text,
         prompt: Text(title)
           .font(.body7)
-          .foregroundColor(isError ? .error : .outline)
+          .foregroundColor(foregroundColor)
       )
       .addDoneButtonOnKeyboard()
       .font(.heading7)
@@ -49,13 +47,13 @@ public struct TUIEmailSubjectField: View {
 }
 
 public extension TUIEmailSubjectField {
-  
-  /// Applies the error style to the field, rendering the title in the error color.
-  /// - Parameter value: A bool that decides whether the error style is applied.
-  /// - Returns: A `TUIEmailSubjectField` updated with the error style.
-  func showsError(_ value: Bool) -> Self {
+
+  /// Overrides the color used to render the title/placeholder.
+  /// - Parameter color: The color to apply to the title/placeholder. Defaults to `.outline`.
+  /// - Returns: A `TUIEmailSubjectField` updated with the given title color.
+  func foregroundColor(_ color: Color) -> Self {
     var view = self
-    view.isError = value
+    view.foregroundColor = color
     return view
   }
 }
