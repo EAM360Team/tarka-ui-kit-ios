@@ -129,7 +129,7 @@ public extension TUIEmailField {
   /// Applies the error style to the field, rendering the title in the error color.
   /// - Parameter value: A bool that decides whether the error style is applied.
   /// - Returns: A `TUIEmailField` updated with the error style.
-  func isError(_ value: Bool) -> Self {
+  func showsError(_ value: Bool) -> Self {
     var view = self
     view.isError = value
     return view
