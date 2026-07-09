@@ -7,11 +7,12 @@
 
 import SwiftUI
 import UIKit
-import Kingfisher
 
 public struct TUIAttachmentUpload: View {
   
   private var inputStyle: InputStyle
+  
+  @State private var computedImage: Image?
   
   public init(_ title: String,
               imageStyle: ImageStyle,
@@ -49,15 +50,19 @@ public struct TUIAttachmentUpload: View {
   private var imageView: some View {
     switch inputStyle.imageStyle {
     case .urlImage(let url, let placeholder):
-      KFImage.url(url)
-        .placeholder {
-          Image(fluent: placeholder)
-        }
+      (computedImage ?? Image(fluent: placeholder))
         .resizable()
         .clipShape(RoundedRectangle(cornerRadius: Spacing.halfHorizontal))
         .frame(width: inputStyle.imageSize.width, height: Spacing.custom(40))
         .scaledToFill()
         .accessibilityIdentifier(Accessibility.image)
+        .task(id: url) {
+          guard let uiImage = UIImage(
+            contentsOfFile: url.path(percentEncoded: false)) else {
+            return
+          }
+          self.computedImage = Image(uiImage: uiImage)
+        }
 
     case .image(let imageName):
       Image(imageName)
