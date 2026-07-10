@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UIKit
+import Kingfisher
 
 public struct TUIAttachmentUpload: View {
   
@@ -49,7 +50,17 @@ public struct TUIAttachmentUpload: View {
   @ViewBuilder
   private var imageView: some View {
     switch inputStyle.imageStyle {
-    case .urlImage(let url, let placeholder):
+    case .remoteURL(let url, let placeholder):
+      KFImage.url(url)
+        .placeholder {
+          Image(fluent: placeholder)
+        }
+        .clipShape(RoundedRectangle(cornerRadius: Spacing.halfHorizontal))
+        .frame(width: inputStyle.imageSize.width, height: Spacing.custom(40))
+        .scaledToFill()
+        .accessibilityIdentifier(Accessibility.image)
+      
+    case .localImage(let url, let placeholder):
       (computedImage ?? Image(fluent: placeholder))
         .resizable()
         .clipShape(RoundedRectangle(cornerRadius: Spacing.halfHorizontal))
@@ -179,7 +190,8 @@ public extension TUIAttachmentUpload {
   }
   
   enum ImageStyle {
-    case urlImage(url: URL, placeholder: FluentIcon),
+    case remoteURL(url: URL, placeholder: FluentIcon),
+         localImage(url: URL, placeholder: FluentIcon),
          image(name: String), icon(FluentIcon)
   }
   
