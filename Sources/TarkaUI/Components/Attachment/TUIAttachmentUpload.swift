@@ -55,6 +55,7 @@ public struct TUIAttachmentUpload: View {
         .placeholder {
           Image(fluent: placeholder)
         }
+        .resizable()
         .clipShape(RoundedRectangle(cornerRadius: Spacing.halfHorizontal))
         .frame(width: inputStyle.imageSize.width, height: Spacing.custom(40))
         .scaledToFill()
