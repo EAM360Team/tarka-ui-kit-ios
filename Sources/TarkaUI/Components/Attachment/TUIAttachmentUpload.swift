@@ -73,7 +73,9 @@ public struct TUIAttachmentUpload: View {
             contentsOfFile: url.path(percentEncoded: false)) else {
             return
           }
-          self.computedImage = Image(uiImage: uiImage)
+          await MainActor.run {
+            self.computedImage = Image(uiImage: uiImage)
+          }
         }
 
     case .image(let imageName):
