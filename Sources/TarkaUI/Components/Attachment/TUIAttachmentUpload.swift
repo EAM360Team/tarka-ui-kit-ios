@@ -13,6 +13,8 @@ public struct TUIAttachmentUpload: View {
   
   private var inputStyle: InputStyle
   
+  @State private var computedImage: Image?
+  
   public init(_ title: String,
               imageStyle: ImageStyle,
               style: TUIAttachmentUpload.Style = .onlyTitle) {
@@ -48,7 +50,7 @@ public struct TUIAttachmentUpload: View {
   @ViewBuilder
   private var imageView: some View {
     switch inputStyle.imageStyle {
-    case .urlImage(let url, let placeholder):
+    case .remoteURL(let url, let placeholder):
       KFImage.url(url)
         .placeholder {
           Image(fluent: placeholder)
@@ -58,6 +60,23 @@ public struct TUIAttachmentUpload: View {
         .frame(width: inputStyle.imageSize.width, height: Spacing.custom(40))
         .scaledToFill()
         .accessibilityIdentifier(Accessibility.image)
+      
+    case .localImage(let url, let placeholder):
+      (computedImage ?? Image(fluent: placeholder))
+        .resizable()
+        .clipShape(RoundedRectangle(cornerRadius: Spacing.halfHorizontal))
+        .frame(width: inputStyle.imageSize.width, height: Spacing.custom(40))
+        .scaledToFill()
+        .accessibilityIdentifier(Accessibility.image)
+        .task(id: url) {
+          guard let uiImage = UIImage(
+            contentsOfFile: url.path(percentEncoded: false)) else {
+            return
+          }
+          await MainActor.run {
+            self.computedImage = Image(uiImage: uiImage)
+          }
+        }
 
     case .image(let imageName):
       Image(imageName)
@@ -174,7 +193,8 @@ public extension TUIAttachmentUpload {
   }
   
   enum ImageStyle {
-    case urlImage(url: URL, placeholder: FluentIcon),
+    case remoteURL(url: URL, placeholder: FluentIcon),
+         localImage(url: URL, placeholder: FluentIcon),
          image(name: String), icon(FluentIcon)
   }
   
