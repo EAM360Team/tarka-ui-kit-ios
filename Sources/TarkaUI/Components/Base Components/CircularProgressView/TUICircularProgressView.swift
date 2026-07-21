@@ -110,7 +110,7 @@ public struct TUICircularProgressView<Label: View>: View {
   @ViewBuilder
   private var progressBorderView: some View {
     Circle()
-      .trim(from: 0, to: style == .determinate ? min(max(progress, 0), 1) : 0.25)
+      .trim(from: 0, to: style == .determinate ? (progress.isFinite ? min(max(progress, 0), 1) : 0) : 0.25)
       .stroke(
         Color.primaryTUI,
         style: StrokeStyle(
