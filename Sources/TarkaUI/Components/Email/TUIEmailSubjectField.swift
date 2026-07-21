@@ -12,6 +12,7 @@ public struct TUIEmailSubjectField: View {
   @Binding public var text: String
 
   private var title: String
+  private var foregroundColor: Color = .outline
 
   public init(text: Binding<String>, title: String = "Subject") {
     self._text = text
@@ -25,7 +26,7 @@ public struct TUIEmailSubjectField: View {
         text: $text,
         prompt: Text(title)
           .font(.body7)
-          .foregroundColor(.outline)
+          .foregroundColor(foregroundColor)
       )
       .addDoneButtonOnKeyboard()
       .font(.heading7)
@@ -42,6 +43,18 @@ public struct TUIEmailSubjectField: View {
     }
     .frame(maxWidth: .infinity)
     .accessibilityIdentifier(Accessibility.root)
+  }
+}
+
+public extension TUIEmailSubjectField {
+
+  /// Overrides the color used to render the title/placeholder.
+  /// - Parameter color: The color to apply to the title/placeholder. Defaults to `.outline`.
+  /// - Returns: A `TUIEmailSubjectField` updated with the given title color.
+  func foregroundColor(_ color: Color) -> Self {
+    var view = self
+    view.foregroundColor = color
+    return view
   }
 }
 
