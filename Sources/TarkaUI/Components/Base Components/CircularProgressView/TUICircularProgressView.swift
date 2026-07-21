@@ -9,7 +9,7 @@ import SwiftUI
 
 public enum TUICircularProgressViewStyle: EnvironmentKey {
   case determinate, indeterminate
-
+  
   public static var defaultValue: TUICircularProgressViewStyle = .indeterminate
 }
 
@@ -36,20 +36,20 @@ public enum TUICircularProgressViewStyle: EnvironmentKey {
 public struct TUICircularProgressView<Label: View>: View {
   /// The progress of the task, represented as a value between 0 and 1. Ignored if the style is `indeterminate`.
   public var progress: Double = 0.0
-
+  
   /// A view to display alongside the progress view.
   public let label: () -> Label
-
+  
   public var backgroundCircleColor = Color.surfaceVariantHover
-
+  
   /// The style of the progress view. The default style is `indeterminate`.
   /// If the style is `determinate`, the progress view shows a progress bar that fills up as the task progresses. If the style is `indeterminate`, the progress view shows a spinning wheel that indicates that the task is in progress but does not show the progress itself.
   var style: TUICircularProgressViewStyle = .indeterminate
-
+  
   private let lineWidth: CGFloat = 4
-
+  
   @State private var isSpinning = false
-
+  
   /// Creates a circular progress view with the specified progress and label.
   ///
   /// - Parameters:
@@ -60,14 +60,14 @@ public struct TUICircularProgressView<Label: View>: View {
     self.progress = progress
     self.label = labelView
   }
-
+  
   public var body: some View {
     ZStack {
       labelView
       progressCircleView
     }
   }
-
+  
   @ViewBuilder
   var progressCircleView: some View {
     if style == .determinate {
@@ -89,7 +89,7 @@ public struct TUICircularProgressView<Label: View>: View {
         .onDisappear { isSpinning = false }
     }
   }
-
+  
   @ViewBuilder
   private var circularView: some View {
     ZStack {
@@ -97,7 +97,7 @@ public struct TUICircularProgressView<Label: View>: View {
       progressBorderView
     }
   }
-
+  
   @ViewBuilder
   private var backgroundCircleView: some View {
     Circle()
@@ -106,7 +106,7 @@ public struct TUICircularProgressView<Label: View>: View {
         lineWidth: lineWidth
       )
   }
-
+  
   @ViewBuilder
   private var progressBorderView: some View {
     Circle()
@@ -118,7 +118,7 @@ public struct TUICircularProgressView<Label: View>: View {
         )
       )
   }
-
+  
   @ViewBuilder
   private var labelView: some View {
     label()
@@ -136,7 +136,7 @@ struct CircularProgressView_Previews: PreviewProvider {
       }
       .circularProgressViewStyle(.determinate)
       .frame(width: 40, height: 40)
-
+      
       TUICircularProgressView(progress: 0.4) {
         Image(fluent: .reOrder24Regular)
           .scaledToFit()
