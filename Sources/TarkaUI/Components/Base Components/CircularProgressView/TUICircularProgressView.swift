@@ -79,14 +79,25 @@ public struct TUICircularProgressView<Label: View>: View {
     } else {
       circularView
         .rotationEffect(.degrees(isSpinning ? 360 : 0))
-        .animation(
-          isSpinning
-            ? .linear(duration: 1).speed(0.5).repeatForever(autoreverses: false)
-            : .default,
-          value: isSpinning
-        )
-        .onAppear { isSpinning = true }
-        .onDisappear { isSpinning = false }
+        .onAppear {
+          // Defer one runloop tick past the view's insertion transaction —
+          // starting the animation synchronously in onAppear can get
+          // silently suppressed by SwiftUI during that transaction.
+          DispatchQueue.main.async {
+            withAnimation(.linear(duration: 2).repeatForever(autoreverses: false)) {
+              isSpinning = true
+            }
+          }
+        }
+        .onDisappear {
+          // Explicitly non-animated: freezes instantly instead of
+          // unwinding backward from wherever the repeatForever cycle is.
+          var transaction = Transaction()
+          transaction.disablesAnimations = true
+          withTransaction(transaction) {
+            isSpinning = false
+          }
+        }
     }
   }
   
