@@ -27,13 +27,12 @@ public struct TUICheckBoxRow: View {
   private var style: Style = .onlyTitle
   private var titleFont: Font = .heading7
   private var titleColor: Color = .onSurface
-  
-  private var isSelected: Bool
+  private var checkBoxStyle: TUICheckBox.Style
   private var borderStyle: BorderStyle = .plain
 
   public init(_ title: any StringProtocol, isSelected: Bool = false) {
     self.title = title
-    self.isSelected = isSelected
+    checkBoxStyle = isSelected ? .checked : .unchecked
   }
   
   public var body: some View {
@@ -52,7 +51,7 @@ public struct TUICheckBoxRow: View {
   
   @ViewBuilder
   private var leftView: some View {
-    TUICheckBox(isSelected: isSelected)
+    TUICheckBox(style: checkBoxStyle)
   }
   
   @ViewBuilder
@@ -128,6 +127,12 @@ public extension TUICheckBoxRow  {
     newView.titleColor = textColor
     return newView
   }
+  
+  func checkBoxState(_ style: TUICheckBox.Style) -> Self {
+    var newView = self
+    newView.checkBoxStyle = style
+    return newView
+  }
 }
 
 struct TUICheckBoxRow_Previews: PreviewProvider {
@@ -139,6 +144,9 @@ struct TUICheckBoxRow_Previews: PreviewProvider {
       TUICheckBoxRow("Welcome", isSelected: true)
         .style(.textDescription("SwiftUI"))
         .borderStyle(.plain)
+      
+      TUICheckBoxRow("Welcome", isSelected: true)
+        .checkBoxState(.mixed)
     }
   }
 }
