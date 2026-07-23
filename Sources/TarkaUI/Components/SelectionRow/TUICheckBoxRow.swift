@@ -128,7 +128,7 @@ public extension TUICheckBoxRow  {
     return newView
   }
   
-  func checkBoxState(_ style: TUICheckBox.Style) -> Self {
+  func checkBoxStyle(_ style: TUICheckBox.Style) -> Self {
     var newView = self
     newView.checkBoxStyle = style
     return newView
@@ -146,7 +146,7 @@ struct TUICheckBoxRow_Previews: PreviewProvider {
         .borderStyle(.plain)
       
       TUICheckBoxRow("Welcome", isSelected: true)
-        .checkBoxState(.mixed)
+        .checkBoxStyle(.mixed)
     }
   }
 }
