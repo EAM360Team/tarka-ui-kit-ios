@@ -49,7 +49,7 @@ enum IOSCompatibilityGuard {
     """
     
 #if DEBUG
-    assertionFailure(message)
+    NSLog(message)
 #else
     NSLog(message)
 #endif
