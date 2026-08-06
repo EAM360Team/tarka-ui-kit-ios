@@ -19,6 +19,7 @@ public struct TUIAppTopBar: View {
   @Environment(\.dismiss) private var dismiss
 
   var barStyle: BarStyle
+  var accessoryButton: TUIIconButton?
   var trailingButton: TUIIconButton?
   @ObservedObject var searchBarVM: TUISearchBarViewModel
 
@@ -44,8 +45,11 @@ public struct TUIAppTopBar: View {
     return topInsets - expectedSafeArea
   }
   
-  public init(barStyle: BarStyle, trailingButton: TUIIconButton? = nil) {
+  public init(barStyle: BarStyle,
+              accessoryButton: TUIIconButton? = nil,
+              trailingButton: TUIIconButton? = nil) {
     self.barStyle = barStyle
+    self.accessoryButton = accessoryButton
     self.trailingButton = trailingButton
     if case .search(let searchBarItem) = barStyle {
       self.searchBarVM = searchBarItem
@@ -166,6 +170,7 @@ public struct TUIAppTopBar: View {
         .style(.ghost)
         .size(.size48)
       }
+      .accessoryButton { accessoryButton }
       .trailingButton { trailingButton }
       .padding(.horizontal, Spacing.baseHorizontal)
       .padding(.vertical, Spacing.baseVertical)
@@ -247,6 +252,15 @@ struct TUIAppTopBar_Previews: PreviewProvider {
         .padding(.horizontal, 16)
         
         TUIAppTopBar(barStyle: .search(searchBarVM))
+
+        TUIAppTopBar(
+          barStyle: .search(searchBarVM),
+          accessoryButton: TUIIconButton(icon: .brainCircuit24Regular) { }
+            .style(.secondary)
+            .size(.size40),
+          trailingButton: TUIIconButton(icon: .barcodeScanner24Regular) { }
+            .style(.ghost)
+            .size(.size40))
       }
     }
     .padding(.vertical, 20)

@@ -8,11 +8,13 @@
 import SwiftUI
 
 /// `TUISearchBar` is a SwiftUI view that used for search in a navigation bar.
-/// The view can be customized with placeholder, back and right bar button items
+/// The view can be customized with placeholder, back and right bar button items,
+/// plus an accessory button that stays visible whatever the search text is
 ///
 public struct TUISearchBar: View {
   
   var backButton: TUIIconButton?
+  var accessoryButton: TUIIconButton?
   var trailingButton: TUIIconButton?
   @ObservedObject var searchBarVM: TUISearchBarViewModel
   
@@ -34,12 +36,17 @@ public struct TUISearchBar: View {
           view
             .padding(.leading, 24)
         }
-        .isEnabled(trailingButton == nil) { view in
+        .isEnabled(trailingButton == nil && accessoryButton == nil) { view in
           view
             .padding(.trailing, 24)
         }
-      
+
       rightIconButton
+
+      if let accessoryButton {
+        accessoryButton
+          .accessibilityIdentifier(Accessibility.accessoryButton)
+      }
     }
     .frame(minHeight: 48)
     .padding(Spacing.custom(4))
@@ -79,6 +86,7 @@ extension TUISearchBar {
   enum Accessibility: String, TUIAccessibility {
     case root = "TUISearchBar"
     case backButton = "BackButton"
+    case accessoryButton = "AccessoryButton"
     case trailingButton = "TrailingButton"
   }
 }
@@ -89,14 +97,45 @@ struct TUISearchBar_Previews: PreviewProvider {
     @StateObject var searchBarVM = TUISearchBarViewModel(
       searchItem: .init(placeholder: "Search", text: "")) { _ in }
 
+    @StateObject var filledSearchBarVM = TUISearchBarViewModel(
+      searchItem: .init(placeholder: "Search", text: "Pump")) { _ in }
+
+    VStack(spacing: 20) {
+
+      TUISearchBar(searchBarVM: searchBarVM)
+        .backButton {
+          TUIIconButton(icon: .chevronLeft24Regular) { }
+            .style(.ghost)
+            .size(.size40)
+        }
+        .trailingButton {
+          TUIIconButton(icon: .dismiss24Regular) { }
+            .style(.ghost)
+            .size(.size40)
+        }
+
+      /// The accessory holds the trailing edge whatever the text is — empty here, typed
+      /// below, where the scan button beside it drops out.
+      accessoryPreview(searchBarVM)
+      accessoryPreview(filledSearchBarVM)
+    }
+    .padding(.horizontal, 16)
+  }
+
+  static func accessoryPreview(_ searchBarVM: TUISearchBarViewModel) -> some View {
     TUISearchBar(searchBarVM: searchBarVM)
       .backButton {
         TUIIconButton(icon: .chevronLeft24Regular) { }
           .style(.ghost)
           .size(.size40)
       }
+      .accessoryButton {
+        TUIIconButton(icon: .brainCircuit24Regular) { }
+          .style(.secondary)
+          .size(.size40)
+      }
       .trailingButton {
-        TUIIconButton(icon: .dismiss24Regular) { }
+        TUIIconButton(icon: .barcodeScanner24Regular) { }
           .style(.ghost)
           .size(.size40)
       }
@@ -116,6 +155,18 @@ public extension TUISearchBar {
   func trailingButton(@ViewBuilder _ button: () -> TUIIconButton?) -> Self {
     var newView = self
     newView.trailingButton = button()
+    return newView
+  }
+
+  /// Adds a button pinned to the trailing edge of the field, after the trailing slot, that
+  /// stays visible whatever the search text is.
+  ///
+  /// Use it for a control whose state has to keep reading while a query is on screen — a
+  /// mode toggle, for one. The trailing slot can't do that: it hands itself over to the
+  /// clear button as soon as the text is non-empty.
+  func accessoryButton(@ViewBuilder _ button: () -> TUIIconButton?) -> Self {
+    var newView = self
+    newView.accessoryButton = button()
     return newView
   }
   
