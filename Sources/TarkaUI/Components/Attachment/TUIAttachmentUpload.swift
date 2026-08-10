@@ -116,9 +116,17 @@ public struct TUIAttachmentUpload: View {
                color: first.iconColor, action: first.action)
       iconView(second.icon, isEnabled: second.isEnabled,
                color: second.iconColor, action: second.action)
+
+    case .menu(let menu):
+      menuView(menu)
+
+    case .iconAndMenu(let icon, let menu):
+      iconView(icon.icon, isEnabled: icon.isEnabled,
+               color: icon.iconColor, action: icon.action)
+      menuView(menu)
     }
   }
-  
+
   @ViewBuilder
   private func iconView(_ icon: FluentIcon, isEnabled: Bool,
                         color: Color, action: @escaping () -> Void) -> some View {
@@ -126,6 +134,20 @@ public struct TUIAttachmentUpload: View {
       TUIIconButton(icon: icon, action: action)
         .size(.size40)
         .iconColor(color)
+        .accessibilityElement(children: .contain)
+    }
+  }
+
+  /// Sized and coloured to match `iconView`, so an overflow menu sits flush with
+  /// the plain icon buttons it replaces. Empty sections render nothing rather
+  /// than an inert button the user can tap for no result.
+  @ViewBuilder
+  private func menuView(_ menu: AttachmentMenu) -> some View {
+    if menu.isEnabled, !menu.sections.isEmpty {
+      TUIIconButton(icon: menu.icon)
+        .menu(menu.sections)
+        .size(.size40)
+        .iconColor(menu.iconColor)
         .accessibilityElement(children: .contain)
     }
   }
@@ -210,8 +232,32 @@ public extension TUIAttachmentUpload {
     }
   }
   
+  struct AttachmentMenu {
+    var icon: FluentIcon
+    var sections: [TUIContextMenuSection]
+    var iconColor = Color.secondaryTUI
+    var isEnabled: Bool
+
+    public init(_ icon: FluentIcon,
+                sections: [TUIContextMenuSection],
+                iconColor: Color = Color.secondaryTUI,
+                isEnabled: Bool = true) {
+      self.icon = icon
+      self.sections = sections
+      self.iconColor = iconColor
+      self.isEnabled = isEnabled
+    }
+  }
+
   enum AttachmentIconButton {
     case none, one(AttachmentIcon), two(AttachmentIcon, AttachmentIcon)
+
+    /// A single overflow menu occupying the trailing slot.
+    case menu(AttachmentMenu)
+
+    /// A status icon (e.g. a sync-error indicator) kept visible alongside the
+    /// trailing overflow menu, since a status is not something to hide in a menu.
+    case iconAndMenu(AttachmentIcon, AttachmentMenu)
   }
   
   func imageSize(_ imageSize: ImageSize) -> Self {
