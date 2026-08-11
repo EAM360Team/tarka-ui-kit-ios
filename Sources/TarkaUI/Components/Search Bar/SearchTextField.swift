@@ -6,12 +6,11 @@
 //
 
 import SwiftUI
-import SwiftUIIntrospect
 
 struct SearchTextField: View {
   
   @ObservedObject var searchBarVM: TUISearchBarViewModel
-  @FocusState private var isFocused: Bool
+  @FocusState private var focusedItem: String?
   
   var body: some View {
     
@@ -22,37 +21,36 @@ struct SearchTextField: View {
         Text(searchBarVM.searchItem.placeholder)
         .foregroundColor(.inputTextDim)
     )
-    .addDoneButtonOnKeyboard {
-      // resign search
-      searchBarVM.isEditing = false
-      searchBarVM.isFocused = false
-    }
-    .focused($isFocused)
-    .onChange(of: isFocused) {
-      searchBarVM.isEditing = $0
-      guard !isFocused else { return }
+    .focused($focusedItem, equals: searchBarVM.currentSearchBarID)
+    .toolbar(content: toolbarDoneButtonView)
+    .onChange(of: focusedItem) { _, newValue in
+      searchBarVM.isEditing = newValue != nil
+      guard let newValue, !newValue.isEmpty else { return }
       // If search on done is enabled,
       // when focus is removed ie. keyboard hides, perform search
       guard searchBarVM.needDelaySearch else { return }
       performSearch()
     }
-    .onChange(of: searchBarVM.isEditing, perform: { value in
-      if value != isFocused {
-        isFocused = value
+    .onChange(of: searchBarVM.isEditing) { _, value in
+      if value != (focusedItem != nil) {
+        focusedItem = searchBarVM.currentSearchBarID
         searchBarVM.isFocused = value
       }
-    })
+    }
     .onAppear {
       guard searchBarVM.searchButtonClicked != nil else { return }
-      isFocused = true
+      focusedItem = searchBarVM.currentSearchBarID
     }
     .onDisappear {
       searchBarVM.searchButtonClicked = nil
+      searchBarVM.isEditing = false
+      searchBarVM.isFocused = false
+      focusedItem = .none
     }
     .accessibilityIdentifier(Accessibility.root)
     .submitLabel(searchBarVM.needDelaySearch ? .search : .return)
     .isEnabled(!searchBarVM.needDelaySearch) {
-      $0.onChange(of: searchBarVM.searchItem.text, perform: updateSearchText)
+      $0.onChange(of: searchBarVM.searchItem.text) { updateSearchText($1) }
     }
   }
   
@@ -64,6 +62,16 @@ struct SearchTextField: View {
   private func updateSearchText(_ value: String) {
     searchBarVM.onEditing(value)
     searchBarVM.searchText = value
+  }
+  
+  @ToolbarContentBuilder
+  private func toolbarDoneButtonView() -> some ToolbarContent {
+    if focusedItem != nil, focusedItem == searchBarVM.currentSearchBarID {
+      ToolbarItemGroup(placement: .keyboard) {
+        Spacer()
+        Button("Done") { focusedItem = nil }
+      }
+    }
   }
 }
 

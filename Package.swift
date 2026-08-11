@@ -19,7 +19,6 @@ let package = Package(
     // with equal spacing and height, and wrap to the next line when needed
     .package(url: "https://github.com/lorin-vr/JustifiableFlowLayout", exact: "1.0.2"),
     .package(url: "https://github.com/onevcat/Kingfisher.git", exact: "8.9.0"),
-    .package(url: "https://github.com/siteline/swiftui-introspect", from: "26.0.1")
   ],
   targets: [
     // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -30,7 +29,6 @@ let package = Package(
         "FluentIcons",
         "JustifiableFlowLayout",
         "Kingfisher",
-        .product(name: "SwiftUIIntrospect", package: "swiftui-introspect")
       ]),
     .binaryTarget(
       name: "FluentIcons",
