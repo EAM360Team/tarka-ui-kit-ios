@@ -13,14 +13,15 @@ public struct TUIEmailSubjectField: View {
 
   private var title: String
   private var foregroundColor: Color = .outline
+  private var state: TUIInputFieldState = .none
 
   public init(text: Binding<String>, title: String = "Subject") {
     self._text = text
     self.title = title.localized
   }
-  
+
   public var body: some View {
-    VStack(spacing: 0) {
+    VStack(alignment: .leading, spacing: 0) {
       TextField(
         "",
         text: $text,
@@ -33,13 +34,19 @@ public struct TUIEmailSubjectField: View {
       .padding(.leading, Spacing.custom(24))
       .padding(.trailing, Spacing.halfHorizontal)
       .padding(.vertical, Spacing.custom(15))
-      
+
       TUIDivider(
         orientation: .horizontal(
           hPadding: .zero,
           vPadding: .zero
         )
       )
+      .color(state.highlightBarColor ?? .surfaceVariantHover)
+
+      if let helperText = state.helperText() {
+        helperText
+          .padding(.top, Spacing.halfVertical)
+      }
     }
     .frame(maxWidth: .infinity)
     .accessibilityIdentifier(Accessibility.root)
@@ -54,6 +61,16 @@ public extension TUIEmailSubjectField {
   func foregroundColor(_ color: Color) -> Self {
     var view = self
     view.foregroundColor = color
+    return view
+  }
+
+  /// Sets the field's validation state — drives the highlight bar color under the
+  /// field and an inline helper/error message below it, matching `TUIInputField`.
+  /// - Parameter value: A `TUIInputFieldState` (e.g. `.error("message")`).
+  /// - Returns: A `TUIEmailSubjectField` updated with the given state.
+  func state(_ value: TUIInputFieldState) -> Self {
+    var view = self
+    view.state = value
     return view
   }
 }
