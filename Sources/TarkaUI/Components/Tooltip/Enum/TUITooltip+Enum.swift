@@ -38,3 +38,27 @@ public enum TUITooltipArrowAlignment: CaseIterable, Identifiable {
     }
   }
 }
+
+public extension TUITooltip {
+
+  /// How the tooltip's message is called out.
+  enum MessageStyle {
+    case error, warning, info
+
+    var color: Color {
+      switch self {
+      case .error: return .error
+      case .warning: return .warning
+      case .info: return .secondaryTUI
+      }
+    }
+
+    var icon: FluentIcon {
+      switch self {
+      case .error: return .errorCircle24Regular
+      case .warning: return .warning24Regular
+      case .info: return .info24Regular
+      }
+    }
+  }
+}
