@@ -29,14 +29,6 @@ public enum TUITooltipArrowAlignment: CaseIterable, Identifiable {
     case .trailing: return .trailing
     }
   }
-
-  /// Inset from the tooltip edge, so the pointer clears the corner radius.
-  var inset: CGFloat {
-    switch self {
-    case .leading, .trailing: return Spacing.doubleHorizontal
-    case .center: return 0
-    }
-  }
 }
 
 public extension TUITooltip {

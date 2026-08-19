@@ -16,6 +16,17 @@ public extension TUITooltip {
     return newView
   }
 
+  /// Aims the pointer at a control by its distance from the aligned edge
+  ///
+  /// - Parameters:
+  ///   - inset: Distance from the aligned edge to the pointer's centre
+  ///
+  func arrowCenterInset(_ inset: CGFloat) -> Self {
+    var newView = self
+    newView.style.arrowCenterInset = inset
+    return newView
+  }
+
   /// Calls a message out below a divider, under the listed items
   ///
   /// - Parameters:

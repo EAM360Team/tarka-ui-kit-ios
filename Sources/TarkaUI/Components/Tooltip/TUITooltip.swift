@@ -50,18 +50,21 @@ public struct TUITooltip: View {
     }
     .compositingGroup()
     // Shadow lvl 1 — two layers, so the card lifts without a hard edge.
-    .shadow(color: .black.opacity(0.161), radius: Spacing.custom(12), y: Spacing.custom(5))
-    .shadow(color: .black.opacity(0.141), radius: Spacing.quarterHorizontal, y: Spacing.custom(5))
+    .shadow(color: .black.opacity(0.16), radius: Spacing.custom(12), y: Spacing.custom(5))
+    .shadow(color: .black.opacity(0.14), radius: Spacing.quarterHorizontal, y: Spacing.custom(5))
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier(Accessibility.root)
   }
+
+  /// Size of the pointer, per the design.
+  static let arrowSize = CGSize(width: 38, height: 11.5)
 
   /// The pointer, drawn in the surface colour so it reads as part of the card.
   private var arrowView: some View {
     TUITooltipArrow()
       .fill(Color.surface)
-      .frame(width: Spacing.custom(38), height: Spacing.custom(12))
-      .padding(.horizontal, style.arrowAlignment.inset)
+      .frame(width: Self.arrowSize.width, height: Self.arrowSize.height)
+      .padding(.horizontal, max(0, style.arrowCenterInset - Self.arrowSize.width / 2))
       .frame(maxWidth: .infinity, alignment: style.arrowAlignment.frameAlignment)
       .accessibilityIdentifier(Accessibility.arrow)
   }
@@ -126,19 +129,28 @@ public struct TUITooltip: View {
 
 // MARK: - Arrow
 
-/// The tooltip pointer: an upward triangle with a softened tip.
+/// The tooltip pointer: a symmetric nub that swells out of the card edge.
+///
+/// Curved on both flanks with a rounded apex, matching the design — a plain triangle reads
+/// far sharper than the component does.
 struct TUITooltipArrow: Shape {
 
   func path(in rect: CGRect) -> Path {
-    let tipRadius = rect.height / 3
+    let width = rect.width
+    let height = rect.height
 
     var path = Path()
     path.move(to: CGPoint(x: rect.minX, y: rect.maxY))
-    path.addQuadCurve(
-      to: CGPoint(x: rect.midX + tipRadius, y: rect.minY + tipRadius),
-      control: CGPoint(x: rect.midX - tipRadius, y: rect.minY))
-    path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+    path.addCurve(
+      to: CGPoint(x: rect.midX, y: rect.minY),
+      control1: CGPoint(x: rect.minX + width * 0.28, y: rect.maxY),
+      control2: CGPoint(x: rect.minX + width * 0.36, y: rect.minY))
+    path.addCurve(
+      to: CGPoint(x: rect.maxX, y: rect.maxY),
+      control1: CGPoint(x: rect.minX + width * 0.64, y: rect.minY),
+      control2: CGPoint(x: rect.minX + width * 0.72, y: rect.maxY))
     path.closeSubpath()
+    _ = height
     return path
   }
 }
@@ -168,6 +180,10 @@ extension TUITooltip {
   struct Style {
     var items: [Item]
     var arrowAlignment: TUITooltipArrowAlignment = .trailing
+
+    /// Distance from the aligned edge to the pointer's centre. Defaults to the design's
+    /// resting position; point it at a specific control by passing that control's offset.
+    var arrowCenterInset: CGFloat = 51
     var message: String?
     var messageStyle: MessageStyle = .error
   }
