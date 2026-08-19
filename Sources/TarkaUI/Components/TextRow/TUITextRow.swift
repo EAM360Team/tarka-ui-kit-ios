@@ -84,10 +84,19 @@ public struct TUITextRow: View {
     default:
       Text(isMandatory ? titleString + " *" : titleString)
         .font(.body8)
-        .foregroundColor(.inputTextDim)
+        .foregroundColor(descriptionStyleTitleColor)
         .frame(minHeight: 14)
         .accessibilityIdentifier(Accessibility.title)
     }
+  }
+
+  /// Title colour for a row that also shows a description.
+  ///
+  /// Such a title sits in `inputTextDim` against its value by default. An explicit
+  /// `textColor` overrides both, so a called-out row reads as a single block of colour
+  /// rather than a coloured value under a grey label.
+  private var descriptionStyleTitleColor: Color {
+    textColor == .onSurface ? .inputTextDim : textColor
   }
   
   @ViewBuilder
@@ -104,7 +113,7 @@ public struct TUITextRow: View {
   private func textDescriptionView(_ description: String) -> some View {
     Text(description)
       .font(.body7)
-      .foregroundColor(.onSurface)
+      .foregroundColor(textColor)
       .frame(minHeight: Spacing.custom(18))
       .multilineTextAlignment(.leading)
       .accessibilityIdentifier(Accessibility.description)
