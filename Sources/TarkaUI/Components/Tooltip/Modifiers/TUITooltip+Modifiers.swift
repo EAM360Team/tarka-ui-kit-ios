@@ -15,6 +15,19 @@ public extension TUITooltip {
     newView.style.arrowAlignment = alignment
     return newView
   }
+
+  /// Calls a message out below a divider, under the listed items
+  ///
+  /// - Parameters:
+  ///   - message: The message to show, or `nil` to show none
+  ///   - style: How to call it out. Defaults to `.error`
+  ///
+  func message(_ message: String?, style: MessageStyle = .error) -> Self {
+    var newView = self
+    newView.style.message = message
+    newView.style.messageStyle = style
+    return newView
+  }
 }
 
 public extension View {
@@ -30,27 +43,23 @@ public extension View {
   /// level, or clear `isPresented` from the control that set it.
   ///
   /// - Parameters:
-  ///   - isPresented: Whether the tooltip is showing.
-  ///   - width: Width of the tooltip card.
-  ///   - arrowAlignment: Which edge the pointer sits near.
-  ///   - content: The tooltip's content.
+  ///   - isPresented: Whether the tooltip is showing
+  ///   - width: Width of the tooltip card
+  ///   - tooltip: The tooltip to show
   ///
-  func tooltip<Content: View>(
-    isPresented: Binding<Bool>,
-    width: CGFloat = 272,
-    arrowAlignment: TUITooltipArrowAlignment = .trailing,
-    @ViewBuilder content: @escaping () -> Content) -> some View {
-      overlay(alignment: .bottomTrailing) {
-        if isPresented.wrappedValue {
-          TUITooltip(content)
-            .arrowAlignment(arrowAlignment)
-            .frame(width: width)
-            // Aligns the tooltip's top to the anchor's bottom, placing it just below.
-            .alignmentGuide(VerticalAlignment.bottom) { $0[.top] }
-            .onTapGesture { isPresented.wrappedValue = false }
-            .zIndex(1)
-        }
+  func tooltip(isPresented: Binding<Bool>,
+               width: CGFloat = 272,
+               _ tooltip: @autoclosure @escaping () -> TUITooltip) -> some View {
+    overlay(alignment: .bottomTrailing) {
+      if isPresented.wrappedValue {
+        tooltip()
+          .frame(width: width)
+          // Aligns the tooltip's top to the anchor's bottom, placing it just below.
+          .alignmentGuide(VerticalAlignment.bottom) { $0[.top] }
+          .onTapGesture { isPresented.wrappedValue = false }
+          .zIndex(1)
       }
-      .zIndex(isPresented.wrappedValue ? 1 : 0)
     }
+    .zIndex(isPresented.wrappedValue ? 1 : 0)
+  }
 }
