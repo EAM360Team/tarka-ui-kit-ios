@@ -259,20 +259,56 @@ struct TUITooltip_Previews: PreviewProvider {
     .init(label: "From Bin", value: "Not Available")
   ]
 
+  private static let longValueItems: [TUITooltip.Item] = [
+    .init(label: "From Parent", value: "Not Available"),
+    .init(label: "From Location",
+          value: "(#AHU-0001) Air Handling Unit - CAS E03 VSD's - Champs- [Casino - Basement]")
+  ]
+
   static var previews: some View {
-    ForEach(TUITooltipPointer.allCases) { pointer in
-      VStack(spacing: Spacing.custom(40)) {
+
+    // Every pointer variant together, as the design sheet lays them out.
+    canvas("Pointer") {
+      ForEach(TUITooltipPointer.allCases) { pointer in
         TUITooltip(items)
           .pointer(pointer)
+      }
+    }
 
+    // The same variants carrying an error validation message.
+    canvas("Error validation") {
+      ForEach(TUITooltipPointer.allCases) { pointer in
         TUITooltip(items)
           .pointer(pointer)
           .errorValidation("Asset cannot move to this location XYZ Reason")
       }
-      .padding(Spacing.custom(24))
-      .frame(maxWidth: .infinity, maxHeight: .infinity)
-      .background(Color.background)
-      .previewDisplayName(pointer.rawValue)
+    }
+
+    // Values long enough to wrap, with and without the message.
+    canvas("Wrapping") {
+      TUITooltip(longValueItems)
+      TUITooltip(longValueItems)
+        .errorValidation("Non Rotating assets cannot be moved to storeroom")
+    }
+
+    // A single item, to check the card collapses to its content.
+    canvas("Single item") {
+      TUITooltip([.init(label: "From Bin", value: "A-01-14")])
     }
   }
+
+  /// Lays previewed tooltips out on a neutral ground, so their shadows stay visible.
+  private static func canvas<Content: View>(
+    _ name: String,
+    @ViewBuilder _ content: () -> Content) -> some View {
+      ScrollView {
+        VStack(alignment: .leading, spacing: Spacing.custom(40)) {
+          content()
+        }
+        .padding(Spacing.custom(24))
+        .frame(maxWidth: .infinity, alignment: .leading)
+      }
+      .background(Color.background)
+      .previewDisplayName(name)
+    }
 }
