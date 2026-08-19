@@ -32,11 +32,7 @@ public extension TUITooltip {
 
 public extension View {
 
-  /// Shows a tooltip anchored below this view.
-  ///
-  /// The tooltip is laid out as an overlay whose top edge meets this view's bottom edge, so
-  /// it needs no coordinate-space measurement and scrolls with its anchor. It is drawn above
-  /// later siblings, and tapping it dismisses itself.
+  /// Shows a tooltip anchored directly below this view.
   ///
   /// Dismissing on a tap *outside* the tooltip is the caller's job: the tooltip cannot see
   /// taps beyond its own bounds, so put a full-screen dismiss layer behind it at screen
@@ -45,21 +41,50 @@ public extension View {
   /// - Parameters:
   ///   - isPresented: Whether the tooltip is showing
   ///   - width: Width of the tooltip card
-  ///   - tooltip: The tooltip to show
+  ///   - tooltip: The tooltip to show, built only while it is presented
   ///
   func tooltip(isPresented: Binding<Bool>,
                width: CGFloat = 272,
                _ tooltip: @autoclosure @escaping () -> TUITooltip) -> some View {
-    overlay(alignment: .bottomTrailing) {
-      if isPresented.wrappedValue {
-        tooltip()
-          .frame(width: width)
-          // Aligns the tooltip's top to the anchor's bottom, placing it just below.
-          .alignmentGuide(VerticalAlignment.bottom) { $0[.top] }
-          .onTapGesture { isPresented.wrappedValue = false }
-          .zIndex(1)
+    modifier(TUITooltipModifier(isPresented: isPresented, width: width, tooltip: tooltip))
+  }
+}
+
+/// Places a tooltip below its anchor by measuring the anchor and offsetting by its height.
+///
+/// An earlier version leaned on `alignmentGuide` to align the tooltip's top edge to the
+/// anchor's bottom. That reads well but did not hold in a real row, where the tooltip landed
+/// over the anchor and hid it — hence the explicit measurement.
+struct TUITooltipModifier: ViewModifier {
+
+  @Binding var isPresented: Bool
+  let width: CGFloat
+  let tooltip: () -> TUITooltip
+
+  @State private var anchorHeight: CGFloat = 0
+
+  func body(content: Content) -> some View {
+    content
+      .background(heightReader)
+      .overlay(alignment: .topTrailing) {
+        if isPresented {
+          tooltip()
+            .frame(width: width)
+            .offset(y: anchorHeight)
+            .onTapGesture { isPresented = false }
+            .zIndex(1)
+        }
       }
+      .zIndex(isPresented ? 1 : 0)
+  }
+
+  private var heightReader: some View {
+    GeometryReader { proxy in
+      Color.clear
+        .onAppear { anchorHeight = proxy.size.height }
+        .onChange(of: proxy.size.height) { newHeight in
+          anchorHeight = newHeight
+        }
     }
-    .zIndex(isPresented.wrappedValue ? 1 : 0)
   }
 }

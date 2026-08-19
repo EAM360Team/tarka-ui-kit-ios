@@ -49,7 +49,9 @@ public struct TUITooltip: View {
       contentView
     }
     .compositingGroup()
-    .shadow(color: .black.opacity(0.16), radius: Spacing.halfHorizontal, y: Spacing.custom(5))
+    // Shadow lvl 1 — two layers, so the card lifts without a hard edge.
+    .shadow(color: .black.opacity(0.161), radius: Spacing.custom(12), y: Spacing.custom(5))
+    .shadow(color: .black.opacity(0.141), radius: Spacing.quarterHorizontal, y: Spacing.custom(5))
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier(Accessibility.root)
   }
@@ -76,7 +78,7 @@ public struct TUITooltip: View {
   }
 
   private var itemsView: some View {
-    VStack(alignment: .leading, spacing: Spacing.halfVertical) {
+    VStack(alignment: .leading, spacing: Spacing.none) {
       ForEach(style.items) { item in
         itemView(item)
       }
@@ -90,7 +92,10 @@ public struct TUITooltip: View {
       Text(item.label + ":").fontWeight(.semibold) + Text(verbatim: " ") + Text(item.value)
     }
     .font(.body7)
-    .foregroundColor(.inputText)
+    .foregroundColor(.onSurface)
+    .multilineTextAlignment(.leading)
+    .lineLimit(nil)
+    .fixedSize(horizontal: false, vertical: true)
     .frame(maxWidth: .infinity, alignment: .leading)
   }
 
@@ -107,6 +112,9 @@ public struct TUITooltip: View {
 
           Text(message)
             .font(.body7)
+            .multilineTextAlignment(.leading)
+            .lineLimit(nil)
+            .fixedSize(horizontal: false, vertical: true)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .foregroundColor(style.messageStyle.color)
