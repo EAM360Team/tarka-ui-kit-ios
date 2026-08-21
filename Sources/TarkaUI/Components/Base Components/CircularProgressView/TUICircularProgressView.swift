@@ -83,7 +83,7 @@ public struct TUICircularProgressView<Label: View>: View {
           // Defer one runloop tick past the view's insertion transaction —
           // starting the animation synchronously in onAppear can get
           // silently suppressed by SwiftUI during that transaction.
-          DispatchQueue.main.async {
+          Task { @MainActor in
             withAnimation(.linear(duration: 2).repeatForever(autoreverses: false)) {
               isSpinning = true
             }
