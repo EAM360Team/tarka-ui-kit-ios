@@ -10,21 +10,22 @@ import SwiftUI
 /// `TUITooltip` is a floating card with a pointer on one edge, used to explain or expand on
 /// the control that opened it.
 ///
-/// It lists label and value pairs, and can call out an error validation message below a
-/// divider. To anchor one to a view and dismiss it on an outside tap, use the
-/// `tooltip(isPresented:_:)` modifier rather than placing this directly.
+/// It lists title and value pairs, and can call out an error validation message below a
+/// divider. To anchor one to a view and dismiss it on an outside tap, mark the view with
+/// `tooltipAnchor(_:)` and put `tooltipHost(presenting:tooltip:)` above anything that clips,
+/// rather than placing this directly.
 ///
 /// Example usage:
 ///
 ///      TUITooltip([
-///        .init(label: "From Parent", value: "(#6886) Pump"),
-///        .init(label: "From Location", value: "(#4485) Main Office")
+///        .init(title: "From Parent", value: "(#6886) Pump"),
+///        .init(title: "From Location", value: "(#4485) Main Office")
 ///      ])
 ///      .pointer(.topRight)
 ///      .errorValidation("Asset cannot move to this location")
 ///
 /// - Parameters:
-///   - items: The label and value pairs to list
+///   - items: The title and value pairs to list
 ///
 public struct TUITooltip: View {
 
@@ -36,7 +37,12 @@ public struct TUITooltip: View {
   /// Width of the card, excluding a pointer sitting on a vertical edge.
   public static let cardWidth: CGFloat = 272
 
-  /// Creates a tooltip listing the given label and value pairs.
+  /// Where the pointer rests along its edge, per the design, measured to its centre.
+  ///
+  /// Override it with `pointerCenterInset(_:)` to aim the pointer at a particular control.
+  public static let defaultPointerCenterInset: CGFloat = 51
+
+  /// Creates a tooltip listing the given title and value pairs.
   ///
   /// - Parameters:
   ///   - items: The pairs to list, one per line.
@@ -130,7 +136,7 @@ public struct TUITooltip: View {
 
   private var itemsView: some View {
     VStack(alignment: .leading, spacing: Spacing.none) {
-      ForEach(style.items) { item in
+      ForEach(style.items, id: \.self) { item in
         itemView(item)
       }
     }
@@ -140,12 +146,11 @@ public struct TUITooltip: View {
   private func itemView(_ item: Item) -> some View {
     HStack(alignment: .top, spacing: Spacing.halfHorizontal) {
       Text(verbatim: "\u{2022}")
-      Text(item.label + ":").fontWeight(.semibold) + Text(verbatim: " ") + Text(item.value)
+      Text(item.title + ":").fontWeight(.semibold) + Text(verbatim: " ") + Text(item.value)
     }
     .font(.body7)
     .foregroundColor(.onSurface)
     .multilineTextAlignment(.leading)
-    .lineLimit(nil)
     .fixedSize(horizontal: false, vertical: true)
     .frame(maxWidth: .infinity, alignment: .leading)
   }
@@ -164,7 +169,6 @@ public struct TUITooltip: View {
           Text(message)
             .font(.body7)
             .multilineTextAlignment(.leading)
-            .lineLimit(nil)
             .fixedSize(horizontal: false, vertical: true)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -205,15 +209,16 @@ struct TUITooltipArrow: Shape {
 
 public extension TUITooltip {
 
-  /// One line of the tooltip: a label and the value it describes.
-  struct Item: Identifiable, Hashable {
-    public let id: String
-    public let label: String
+  /// One line of the tooltip: the name of a field and the value it holds.
+  ///
+  /// `Hashable` is all the list needs to tell one line from another, so there is no `id` to
+  /// keep in step with the content — two lines differing only in value stay distinct.
+  struct Item: Hashable {
+    public let title: String
     public let value: String
 
-    public init(label: String, value: String) {
-      self.id = label
-      self.label = label
+    public init(title: String, value: String) {
+      self.title = title
       self.value = value
     }
   }
@@ -231,7 +236,7 @@ extension TUITooltip {
     ///
     /// Defaults to the design's resting position; aim it at a control by passing that
     /// control's offset from the same edge.
-    var pointerCenterInset: CGFloat = 51
+    var pointerCenterInset: CGFloat = TUITooltip.defaultPointerCenterInset
     var errorValidation: String?
     var messageStyle: MessageStyle = .error
   }
@@ -254,14 +259,14 @@ public extension TUITooltip {
 struct TUITooltip_Previews: PreviewProvider {
 
   private static let items: [TUITooltip.Item] = [
-    .init(label: "From Parent", value: "(#6886) Pump"),
-    .init(label: "From Location", value: "(#4485) Main Office"),
-    .init(label: "From Bin", value: "Not Available")
+    .init(title: "From Parent", value: "(#6886) Pump"),
+    .init(title: "From Location", value: "(#4485) Main Office"),
+    .init(title: "From Bin", value: "Not Available")
   ]
 
   private static let longValueItems: [TUITooltip.Item] = [
-    .init(label: "From Parent", value: "Not Available"),
-    .init(label: "From Location",
+    .init(title: "From Parent", value: "Not Available"),
+    .init(title: "From Location",
           value: "(#AHU-0001) Air Handling Unit - CAS E03 VSD's - Champs- [Casino - Basement]")
   ]
 
@@ -293,7 +298,7 @@ struct TUITooltip_Previews: PreviewProvider {
 
     // A single item, to check the card collapses to its content.
     canvas("Single item") {
-      TUITooltip([.init(label: "From Bin", value: "A-01-14")])
+      TUITooltip([.init(title: "From Bin", value: "A-01-14")])
     }
   }
 
