@@ -93,7 +93,7 @@ struct TUITooltipHost: View {
 
   private var placedTooltip: some View {
     resolvedTooltip
-      .background(heightReader)
+      .getHeight($tooltipHeight)
       .offset(x: origin.x, y: origin.y)
       .onTapGesture(perform: onDismiss)
   }
@@ -128,15 +128,5 @@ struct TUITooltipHost: View {
     let x = min(max(Self.margin, unclampedX), maxX)
     let y = shouldFlipAbove ? anchor.minY - tooltipHeight : anchor.maxY
     return CGPoint(x: x, y: y)
-  }
-
-  private var heightReader: some View {
-    GeometryReader { proxy in
-      Color.clear
-        .onAppear { tooltipHeight = proxy.size.height }
-        .onChange(of: proxy.size.height) { newHeight in
-          tooltipHeight = newHeight
-        }
-    }
   }
 }
