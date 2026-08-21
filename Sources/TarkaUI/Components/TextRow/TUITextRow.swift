@@ -13,10 +13,14 @@ import SwiftUI
 public struct TUITextRow: View {
   public var title: any StringProtocol
   public var style: Style
-  
+
   @ViewBuilder var wrapperIcon: (() -> TUIWrapperIcon?)
   @TUIIconButtonBuilder var iconButtons: (() -> [TUIIconButton])
-  
+
+  public var textColor: Color = .onSurface
+  private var isMandatory: Bool = false
+  private var titleString: String { String(title) }
+
   /// Creates a text row with the specified title and style.
   ///
   /// - Parameters:
@@ -29,6 +33,13 @@ public struct TUITextRow: View {
     self.style = style
     self.wrapperIcon = { nil }
     self.iconButtons = { [] }
+  }
+
+  /// When `true`, appends a `" *"` suffix to the title to indicate a mandatory field.
+  public func isMandatory(_ value: Bool) -> Self {
+    var newView = self
+    newView.isMandatory = value
+    return newView
   }
   
   public var body: some View {
@@ -63,20 +74,29 @@ public struct TUITextRow: View {
   private var titleView: some View {
     switch style {
     case .onlyTitle:
-      Text(title)
+      Text(isMandatory ? titleString + " *" : titleString)
         .font(.heading7)
-        .foregroundColor(.onSurface)
+        .foregroundColor(textColor)
         .frame(minHeight: 18)
         .padding(.vertical, Spacing.custom(11))
         .accessibilityIdentifier(Accessibility.title)
-      
+
     default:
-      Text(title)
+      Text(isMandatory ? titleString + " *" : titleString)
         .font(.body8)
-        .foregroundColor(.inputTextDim)
+        .foregroundColor(descriptionStyleTitleColor)
         .frame(minHeight: 14)
         .accessibilityIdentifier(Accessibility.title)
     }
+  }
+
+  /// Title colour for a row that also shows a description.
+  ///
+  /// Such a title sits in `inputTextDim` against its value by default. An explicit
+  /// `textColor` overrides both, so a called-out row reads as a single block of colour
+  /// rather than a coloured value under a grey label.
+  private var descriptionStyleTitleColor: Color {
+    textColor == .onSurface ? .inputTextDim : textColor
   }
   
   @ViewBuilder
@@ -93,7 +113,7 @@ public struct TUITextRow: View {
   private func textDescriptionView(_ description: String) -> some View {
     Text(description)
       .font(.body7)
-      .foregroundColor(.onSurface)
+      .foregroundColor(textColor)
       .frame(minHeight: Spacing.custom(18))
       .multilineTextAlignment(.leading)
       .accessibilityIdentifier(Accessibility.description)
