@@ -11,9 +11,6 @@ import SwiftUI
 ///
 /// Pick the one facing whatever opened the tooltip: a control above the tooltip wants
 /// `.top` or `.topRight`, a control below it wants `.bottom`.
-///
-/// Declared outside `TUITooltip` so it stays a single type — a type nested in a generic is
-/// specialised along with it.
 public enum TUITooltipPointer: String, CaseIterable, Identifiable {
 
   public var id: String { rawValue }
