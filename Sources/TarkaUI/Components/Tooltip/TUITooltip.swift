@@ -136,7 +136,7 @@ public struct TUITooltip: View {
 
   private var itemsView: some View {
     VStack(alignment: .leading, spacing: Spacing.none) {
-      ForEach(style.items, id: \.self) { item in
+      ForEach(style.items, id: \.id) { item in
         itemView(item)
       }
     }
@@ -211,13 +211,15 @@ public extension TUITooltip {
 
   /// One line of the tooltip: the name of a field and the value it holds.
   ///
-  /// `Hashable` is all the list needs to tell one line from another, so there is no `id` to
-  /// keep in step with the content — two lines differing only in value stay distinct.
+  /// `id` defaults to a fresh `UUID`, so two lines carrying the same text still stand apart in
+  /// the list. Pass an id of your own where a line's identity has to survive a rebuild.
   struct Item: Hashable {
+    public let id: String
     public let title: String
     public let value: String
 
-    public init(title: String, value: String) {
+    public init(id: String = UUID().uuidString, title: String, value: String) {
+      self.id = id
       self.title = title
       self.value = value
     }
