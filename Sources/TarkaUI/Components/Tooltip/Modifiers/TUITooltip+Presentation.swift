@@ -86,7 +86,7 @@ struct TUITooltipHost: View {
 
   private var dismissLayer: some View {
     Color.clear
-      .contentShape(Rectangle())
+      .contentShape(.rect)
       .frame(width: container.width, height: container.height)
       .onTapGesture(perform: onDismiss)
   }
@@ -95,6 +95,7 @@ struct TUITooltipHost: View {
     resolvedTooltip
       .getHeight($tooltipHeight)
       .offset(x: origin.x, y: origin.y)
+      .contentShape(.rect)
       .onTapGesture(perform: onDismiss)
   }
 
