@@ -46,7 +46,7 @@ public struct TUICollapsibleSection<Content: View>: View {
       headerChip
       if isExpanded {
         content()
-          .transition(.opacity.combined(with: .move(edge: .top)))
+          .transition(.opacity)
       }
     }
     .animation(.easeInOut(duration: 0.25), value: isExpanded)
@@ -69,7 +69,6 @@ public struct TUICollapsibleSection<Content: View>: View {
           .frame(width: 16, height: 16)
           .foregroundStyle(Color.onSurface)
           .rotationEffect(.degrees(isExpanded ? 180 : 0))
-          .animation(.easeInOut(duration: 0.25), value: isExpanded)
       }
       .padding(.horizontal, Spacing.baseHorizontal)
       .padding(.vertical, Spacing.halfVertical)
@@ -80,6 +79,7 @@ public struct TUICollapsibleSection<Content: View>: View {
     .frame(maxWidth: .infinity, alignment: .leading)
     .padding(.horizontal, Spacing.baseHorizontal)
     .padding(.vertical, Spacing.baseVertical)
+    .accessibilityValue(isExpanded ? "Expanded" : "Collapsed")
     .accessibilityIdentifier(Accessibility.header)
   }
 }
