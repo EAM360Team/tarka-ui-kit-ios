@@ -42,15 +42,13 @@ public struct TUICollapsibleSection<Content: View>: View {
   }
 
   public var body: some View {
-    VStack(alignment: .leading, spacing: .zero) {
+    DisclosureGroup(isExpanded: $isExpanded) {
+      content()
+        .transition(.opacity)
+    } label: {
       headerChip
-      if isExpanded {
-        content()
-          .transition(.opacity)
-      }
     }
-    .animation(.easeInOut(duration: 0.25), value: isExpanded)
-    .clipped()
+    .disclosureGroupStyle(CollapsibleSectionStyle())
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier(Accessibility.root)
   }
@@ -81,6 +79,19 @@ public struct TUICollapsibleSection<Content: View>: View {
     .padding(.vertical, Spacing.baseVertical)
     .accessibilityValue(isExpanded ? "Expanded" : "Collapsed")
     .accessibilityIdentifier(Accessibility.header)
+  }
+}
+
+private struct CollapsibleSectionStyle: DisclosureGroupStyle {
+  func makeBody(configuration: Configuration) -> some View {
+    VStack(alignment: .leading, spacing: .zero) {
+      configuration.label
+      if configuration.isExpanded {
+        configuration.content
+      }
+    }
+    .animation(.easeInOut(duration: 0.25), value: configuration.isExpanded)
+    .clipped()
   }
 }
 
