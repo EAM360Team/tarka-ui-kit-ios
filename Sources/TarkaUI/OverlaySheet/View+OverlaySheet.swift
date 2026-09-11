@@ -31,13 +31,17 @@ public extension View {
   ///
   /// - Parameters:
   ///   - isPresented: to show / dismiss
+  ///   - onDismiss: called after the sheet has fully finished dismissing (SwiftUI's
+  ///     own `.sheet(isPresented:onDismiss:)` hook) — the right place to trigger UI
+  ///     (e.g. a toast) that must not visually compete with the dismiss transition.
   ///   - content: This can be any swiftUI view that has to be presented
   /// - Returns: View
   ///
   @ViewBuilder
   func overlaySheet<V: View>(isPresented: Binding<Bool>,
+                             onDismiss: (() -> Void)? = nil,
                              content: @autoclosure @escaping () -> V) -> some View {
-    modifier(OverlaySheet(isPresented: isPresented, contentView: content()))
+    modifier(OverlaySheet(isPresented: isPresented, onDismiss: onDismiss, contentView: content()))
   }
 }
 

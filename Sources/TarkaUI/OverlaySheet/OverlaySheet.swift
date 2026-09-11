@@ -14,15 +14,21 @@ public struct OverlaySheet<V: View>: ViewModifier {
   @Binding var isPresented: Bool
   @Environment(\.horizontalSizeClass) var sizeClass
   private var contentView: () -> V
-  
-  public init(isPresented: Binding<Bool>, contentView: @autoclosure @escaping () -> V) {
+  private var onDismiss: (() -> Void)?
+
+  public init(
+    isPresented: Binding<Bool>,
+    onDismiss: (() -> Void)? = nil,
+    contentView: @autoclosure @escaping () -> V
+  ) {
     _isPresented = isPresented
+    self.onDismiss = onDismiss
     self.contentView = contentView
   }
-  
+
   public func body(content: Content) -> some View {
     content
-      .sheet(isPresented: $isPresented) {
+      .sheet(isPresented: $isPresented, onDismiss: onDismiss) {
         DestinationView(
           isPresented: $isPresented,
           contentView: contentView,
