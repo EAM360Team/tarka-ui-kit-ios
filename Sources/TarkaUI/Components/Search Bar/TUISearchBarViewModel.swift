@@ -22,6 +22,8 @@ public struct TUISearchBarItem {
 }
 
 public class TUISearchBarViewModel: ObservableObject {
+  
+  public let currentSearchBarID = UUID().uuidString
 
   @Published public var searchItem: TUISearchBarItem
   @Published public var isShown: Bool = false {

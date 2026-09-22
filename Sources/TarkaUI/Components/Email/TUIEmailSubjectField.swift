@@ -6,10 +6,10 @@
 //
 
 import SwiftUI
-import SwiftUIIntrospect
 
 public struct TUIEmailSubjectField: View {
   @Binding public var text: String
+  @FocusState private var isFocused: Bool
 
   private var title: String
   private var foregroundColor: Color = .outline
@@ -29,7 +29,8 @@ public struct TUIEmailSubjectField: View {
           .font(.body7)
           .foregroundColor(foregroundColor)
       )
-      .addDoneButtonOnKeyboard()
+      .focused($isFocused)
+      .toolbar(content: toolbarDoneButtonView)
       .font(.heading7)
       .padding(.leading, Spacing.custom(24))
       .padding(.trailing, Spacing.halfHorizontal)
@@ -50,6 +51,14 @@ public struct TUIEmailSubjectField: View {
     }
     .frame(maxWidth: .infinity)
     .accessibilityIdentifier(Accessibility.root)
+  }
+  
+  @ToolbarContentBuilder
+  private func toolbarDoneButtonView() -> some ToolbarContent {
+    ToolbarItemGroup(placement: .keyboard) {
+      Spacer()
+      Button("Done") { isFocused = false }
+    }
   }
 }
 
