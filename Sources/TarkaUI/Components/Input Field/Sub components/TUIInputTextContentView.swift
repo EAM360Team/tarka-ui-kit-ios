@@ -17,7 +17,7 @@ struct TUIInputTextContentView: View {
   @Binding var inputItem: TUIInputFieldItem
   
   @Binding private var isTextFieldFocused: Bool
-  @FocusState private var isFocused: Bool
+  @FocusState private var focusedItem: TUIInputFieldItem?
   @Binding var isTextFieldEditingOn: Bool
 
   private var placeholder: String
@@ -65,12 +65,15 @@ struct TUIInputTextContentView: View {
     }
     .onAppear {
       if isTextFieldFocused {
-        self.isFocused = true
+        focusedItem = inputItem
       }
     }
-    .onChange(of: $isFocused.wrappedValue, perform: { value in
-      isTextFieldFocused = isFocused
+    .onChange(of: focusedItem, perform: { value in
+      isTextFieldFocused = value != nil
+      isTextFieldEditingOn = value != nil
     })
+    .onDisappear { focusedItem = .none }
+    .toolbar(content: toolbarDoneButtonView)
     .frame(minHeight: height)
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier(Accessibility.root)
@@ -125,27 +128,36 @@ struct TUIInputTextContentView: View {
         if isSecureField {
           SecureField(placeholder,
                       text: $inputItem.value)
+          .focused($focusedItem, equals: inputItem)
         } else {
           TextField(placeholder,
                     text: $inputItem.value,
                     axis: .vertical)
           .textFieldStyle(.plain)
+          .focused($focusedItem, equals: inputItem)
         }
       }
       .onChange(of: inputItem.value) { newValue in
         limitText(newValue)
       }
-      .onChange(of: isFocused) { newValue in
-        isTextFieldEditingOn = newValue
-      }
       .keyboardType(keyboardType)
       .lineSpacing(0)
-      .focused($isFocused)
       .multilineTextAlignment(.leading)
       .labelsHidden()
       .disabled(!isTextFieldFocused)
     } else {
       Text(inputItem.value)
+    }
+  }
+  
+  @ToolbarContentBuilder
+  private func toolbarDoneButtonView() -> some ToolbarContent {
+    if focusedItem != nil, focusedItem == inputItem {
+      ToolbarItemGroup(placement: .keyboard) {
+        Spacer()
+        Button("Done") { focusedItem = nil }
+          .foregroundStyle(Color.primaryTUI)
+      }
     }
   }
   

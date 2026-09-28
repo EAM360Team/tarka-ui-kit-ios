@@ -23,12 +23,6 @@ public struct TUIInputField: TUIInputFieldProtocol {
   @Binding var isTextFieldEditingOn: Bool
   @Binding var isTextFieldFocused: Bool
   
-  /* Facing some weird issue. When input item value is changed,
-   it is getting updates in `TUIInputTextContentView` but not here.
-   If I declare this variable, just declaration solves the problem
-   */
-  @FocusState private var isFocused: Bool
-  
   public var properties: TUIInputFieldOptionalProperties
 
   private var maxCharacters: Int
