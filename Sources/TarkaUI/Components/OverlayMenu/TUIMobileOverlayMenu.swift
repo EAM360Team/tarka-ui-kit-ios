@@ -57,7 +57,7 @@ public struct TUIMobileOverlayMenu: View {
     }
     .background(Color.surface)
     .clipShape(RoundedRectangle(cornerRadius: Spacing.baseHorizontal))
-    .presentationDetents([.height(height)])
+    .presentationDetents([.height(max(1, height))])
     .accessibilityIdentifier(Accessibility.root)
     .accessibilityElement(children: .contain)
     .onDisappear(perform: performButtonAction)
