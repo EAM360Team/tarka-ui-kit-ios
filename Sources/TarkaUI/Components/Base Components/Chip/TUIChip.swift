@@ -38,6 +38,10 @@ public struct TUIChip: View {
       }
     }
     .buttonStyle(ChipButtonStyle(inputItem, leading: leading, trailing: trailing))
+    // The trailing button sits on top of the chip instead of inside its label: a button
+    // nested in another button's label competes for the same taps, and its 32pt circle
+    // started right where the title ends, so taps on the end of the title removed the chip.
+    .overlay(alignment: .trailing) { trailingButtonView }
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier(Accessibility.root)
   }
@@ -70,22 +74,22 @@ public struct TUIChip: View {
   @ViewBuilder
   private func inputView(for type: Input) -> some View {
     switch type {
-    case .titleWithButton(let icon, let action):
+    case .titleWithButton:
       titleView
-      rightButtonView(icon, action: action)
+      rightButtonPlaceholder
       
-    case .withLeftImage(let image, rightIcon: let icon, let action):
+    case .withLeftImage(let image, _, _):
       leftImageView(image)
       HStack(spacing: 0) {
         titleView
-        rightButtonView(icon, action: action)
+        rightButtonPlaceholder
       }
       
-    case .withLeftIcon(let icon, rightIcon: let righticon, let action):
+    case .withLeftIcon(let icon, _, _):
       iconView(icon)
       HStack(spacing: 0) {
         titleView
-        rightButtonView(righticon, action: action)
+        rightButtonPlaceholder
       }
     }
   }
@@ -112,14 +116,9 @@ public struct TUIChip: View {
         titleView
       }
       
-    case .withButton(let icon, let action):
-      if inputItem.isSelected {
-        titleView
-        rightButtonView(icon, action: action)
-      } else {
-        titleView
-        rightButtonView(icon, action: action)
-      }
+    case .withButton:
+      titleView
+      rightButtonPlaceholder
     }
   }
   
@@ -160,14 +159,55 @@ public struct TUIChip: View {
       .accessibilityIdentifier(accessibilityID)
   }
   
+  /// Keeps the trailing button's space inside the chip's label, so the layout is the same
+  /// as when the button was part of it. The button itself is drawn by `trailingButtonView`.
+  private var rightButtonPlaceholder: some View {
+    Color.clear
+      .frame(width: trailingButtonFrame, height: trailingButtonFrame)
+      .accessibilityHidden(true)
+  }
+
   @ViewBuilder
-  private func rightButtonView(_ icon: FluentIcon = .dismiss16Filled,
-                               action: @escaping () -> Void) -> some View {
-    TUIIconButton(icon: icon) { action() }
-      .iconColor(inputItem.tintColor)
-      .size(inputItem.iconSize)
+  private var trailingButtonView: some View {
+    if let trailingButton {
+      Button(action: trailingButton.action) {
+        Image(fluent: trailingButton.icon)
+          .scaledToFit()
+          .frame(width: trailingIconSize, height: trailingIconSize)
+          .foregroundColor(inputItem.tintColor)
+          // Same icon position as before; the tap area now starts at the icon's leading
+          // edge instead of the title's trailing edge.
+          .padding(.trailing, (trailingButtonFrame - trailingIconSize) / 2)
+          .frame(height: inputItem.size.height)
+          .contentShape(.rect)
+      }
+      .buttonStyle(.plain)
+      .padding(.trailing, trailing)
       .accessibilityElement(children: .contain)
       .accessibilityIdentifier(Accessibility.button)
+    }
+  }
+
+  /// Icon and action of the styles that end with a button.
+  private var trailingButton: (icon: FluentIcon, action: () -> Void)? {
+    switch inputItem.style {
+    case .input(.titleWithButton(let icon, let action)),
+         .input(.withLeftIcon(_, let icon, let action)),
+         .input(.withLeftImage(_, let icon, let action)),
+         .filter(.withButton(let icon, let action)):
+      return (icon, action)
+    default:
+      return nil
+    }
+  }
+
+  /// Matches the `TUIIconButton` frame previously used for the trailing button.
+  private var trailingButtonFrame: CGFloat {
+    inputItem.iconSize == .size32 ? Spacing.custom(32) : Spacing.custom(40)
+  }
+
+  private var trailingIconSize: CGFloat {
+    Spacing.custom(24)
   }
   
   // MARK: - Button Style
