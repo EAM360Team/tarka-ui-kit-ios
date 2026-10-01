@@ -38,9 +38,7 @@ public struct TUIChip: View {
       }
     }
     .buttonStyle(ChipButtonStyle(inputItem, leading: leading, trailing: trailing))
-    // The trailing button sits on top of the chip instead of inside its label: a button
-    // nested in another button's label competes for the same taps, and its 32pt circle
-    // started right where the title ends, so taps on the end of the title removed the chip.
+    // Trailing button overlays the chip, not nested in its label, so it can't catch taps on the title.
     .overlay(alignment: .trailing) { trailingButtonView }
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier(Accessibility.root)
@@ -159,8 +157,7 @@ public struct TUIChip: View {
       .accessibilityIdentifier(accessibilityID)
   }
   
-  /// Keeps the trailing button's space inside the chip's label, so the layout is the same
-  /// as when the button was part of it. The button itself is drawn by `trailingButtonView`.
+  /// Keeps the trailing button's space so the chip layout is unchanged.
   private var rightButtonPlaceholder: some View {
     Color.clear
       .frame(width: trailingButtonFrame, height: trailingButtonFrame)
@@ -175,8 +172,7 @@ public struct TUIChip: View {
           .scaledToFit()
           .frame(width: trailingIconSize, height: trailingIconSize)
           .foregroundColor(inputItem.tintColor)
-          // Same icon position as before; the tap area now starts at the icon's leading
-          // edge instead of the title's trailing edge.
+          // Same icon position; the tap area starts at the icon, not the title.
           .padding(.trailing, (trailingButtonFrame - trailingIconSize) / 2)
           .frame(height: inputItem.size.height)
           .contentShape(.rect)
