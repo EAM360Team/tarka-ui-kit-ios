@@ -50,6 +50,8 @@ public struct TUICircularProgressView<Label: View>: View {
   
   @State private var isSpinning = false
   
+  @State private var spinStartTask: Task<Void, Never>?
+  
   /// Creates a circular progress view with the specified progress and label.
   ///
   /// - Parameters:
@@ -83,13 +85,20 @@ public struct TUICircularProgressView<Label: View>: View {
           // Defer one runloop tick past the view's insertion transaction —
           // starting the animation synchronously in onAppear can get
           // silently suppressed by SwiftUI during that transaction.
-          Task { @MainActor in
+          // The handle is kept so onDisappear can cancel a start that
+          // hasn't run yet; otherwise a fast appear/disappear would start
+          // an infinite spin on a view that's already offscreen.
+          spinStartTask?.cancel()
+          spinStartTask = Task { @MainActor in
+            guard !Task.isCancelled else { return }
             withAnimation(.linear(duration: 2).repeatForever(autoreverses: false)) {
               isSpinning = true
             }
           }
         }
         .onDisappear {
+          spinStartTask?.cancel()
+          spinStartTask = nil
           // Explicitly non-animated: freezes instantly instead of
           // unwinding backward from wherever the repeatForever cycle is.
           var transaction = Transaction()
