@@ -38,7 +38,9 @@ public struct TUIChip: View {
       }
     }
     .buttonStyle(ChipButtonStyle(inputItem, leading: leading, trailing: trailing))
-    .overlay(alignment: .trailing) { trailingButtonView }
+    .isEnabled(hasTrailingButton) {
+      $0.overlay(alignment: .trailing) { trailingButtonView }
+    }
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier(Accessibility.root)
   }
@@ -77,7 +79,6 @@ public struct TUIChip: View {
       
     case .titleWithTrailingButton:
       titleView
-      rightButtonPlaceholder
       
     case .withLeftImage(let image, rightIcon: let icon, let action):
       leftImageView(image)
@@ -175,40 +176,27 @@ public struct TUIChip: View {
       .accessibilityIdentifier(Accessibility.button)
   }
   
-  /// Keeps the trailing button's space so the chip layout matches `.titleWithButton`.
-  private var rightButtonPlaceholder: some View {
-    Color.clear
-      .frame(width: trailingButtonFrame, height: trailingButtonFrame)
-      .accessibilityHidden(true)
-  }
-
   @ViewBuilder
   private var trailingButtonView: some View {
     if case .input(.titleWithTrailingButton(let icon, let action)) = inputItem.style {
       Button(action: action) {
         Image(fluent: icon)
           .scaledToFit()
-          .frame(width: trailingIconSize, height: trailingIconSize)
+          .frame(width: Spacing.custom(24), height: Spacing.custom(24))
           .foregroundColor(inputItem.tintColor)
-          // Same icon position; the tap area starts at the icon, not the title.
-          .padding(.trailing, (trailingButtonFrame - trailingIconSize) / 2)
+          .padding(.trailing, Spacing.quarterHorizontal)
           .frame(height: inputItem.size.height)
           .contentShape(.rect)
       }
       .buttonStyle(.plain)
-      .padding(.trailing, trailing)
       .accessibilityElement(children: .contain)
       .accessibilityIdentifier(Accessibility.button)
     }
   }
 
-  /// Matches the `TUIIconButton` frame used by `.titleWithButton`.
-  private var trailingButtonFrame: CGFloat {
-    inputItem.iconSize == .size32 ? Spacing.custom(32) : Spacing.custom(40)
-  }
-
-  private var trailingIconSize: CGFloat {
-    Spacing.custom(24)
+  private var hasTrailingButton: Bool {
+    if case .input(.titleWithTrailingButton) = inputItem.style { return true }
+    return false
   }
   
   // MARK: - Button Style
@@ -341,7 +329,9 @@ extension TUIChip {
   private var trailing: CGFloat {
     switch inputItem.style {
     case .assist, .suggestion: return Spacing.baseHorizontal
-    case .input: return Spacing.custom(0)
+    case .input(let type):
+      if case .titleWithTrailingButton = type { return Spacing.custom(32) }
+      return Spacing.custom(0)
     case .filter(let type):
       switch type {
       case .onlyTitle:
@@ -496,7 +486,6 @@ public extension TUIChip {
   
   enum Input {
     case titleWithButton(FluentIcon, action: () -> Void),
-         /// Like `titleWithButton`, but the button overlays the chip so taps on the title never hit it.
          titleWithTrailingButton(FluentIcon, action: () -> Void),
          withLeftIcon(ImageIconProtocol, rightIcon: FluentIcon, action: () -> Void),
          withLeftImage(Image, rightIcon: FluentIcon, action: () -> Void)
