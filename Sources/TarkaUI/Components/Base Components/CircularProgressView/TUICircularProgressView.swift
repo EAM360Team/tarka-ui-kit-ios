@@ -48,7 +48,9 @@ public struct TUICircularProgressView<Label: View>: View {
   
   private let lineWidth: CGFloat = 4
   
-  @State private var rotationDegrees = 0.0
+  @State private var isSpinning = false
+  
+  @State private var spinStartTask: Task<Void, Never>?
   
   /// Creates a circular progress view with the specified progress and label.
   ///
@@ -71,27 +73,38 @@ public struct TUICircularProgressView<Label: View>: View {
   @ViewBuilder
   var progressCircleView: some View {
     if style == .determinate {
-      if progress >= 1.0 {
-        circularView
-      } else {
-        circularView
-          .rotationEffect(.degrees(-90))
-        // Rotate by -90 degrees. Otherwise, the progression starts on
-        // the right side of the circle instead of at the top
-          .animation(.easeIn, value: progress)
-      }
+      circularView
+        .rotationEffect(.degrees(-90))
+      // Rotate by -90 degrees. Otherwise, the progression starts on
+      // the right side of the circle instead of at the top
+        .animation(.easeIn, value: progress)
     } else {
       circularView
-        .rotationEffect(.degrees(rotationDegrees))
+        .rotationEffect(.degrees(isSpinning ? 360 : 0))
         .onAppear {
-          DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            withAnimation(
-              .linear(duration: 1)
-              .speed(0.5)
-              .repeatForever(autoreverses: false)
-            ) {
-              self.rotationDegrees = 360.0
+          // Defer one runloop tick past the view's insertion transaction —
+          // starting the animation synchronously in onAppear can get
+          // silently suppressed by SwiftUI during that transaction.
+          // The handle is kept so onDisappear can cancel a start that
+          // hasn't run yet; otherwise a fast appear/disappear would start
+          // an infinite spin on a view that's already offscreen.
+          spinStartTask?.cancel()
+          spinStartTask = Task { @MainActor in
+            guard !Task.isCancelled else { return }
+            withAnimation(.linear(duration: 2).repeatForever(autoreverses: false)) {
+              isSpinning = true
             }
+          }
+        }
+        .onDisappear {
+          spinStartTask?.cancel()
+          spinStartTask = nil
+          // Explicitly non-animated: freezes instantly instead of
+          // unwinding backward from wherever the repeatForever cycle is.
+          var transaction = Transaction()
+          transaction.disablesAnimations = true
+          withTransaction(transaction) {
+            isSpinning = false
           }
         }
     }
@@ -117,7 +130,7 @@ public struct TUICircularProgressView<Label: View>: View {
   @ViewBuilder
   private var progressBorderView: some View {
     Circle()
-      .trim(from: 0, to: style == .determinate ? progress : 0.25)
+      .trim(from: 0, to: style == .determinate ? (progress.isFinite ? min(max(progress, 0), 1) : 0) : 0.25)
       .stroke(
         Color.primaryTUI,
         style: StrokeStyle(
