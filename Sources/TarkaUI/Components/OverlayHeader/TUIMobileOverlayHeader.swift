@@ -86,6 +86,7 @@ public struct TUIMobileOverlayHeader: View {
         .frame(maxWidth: .infinity)
         .overlay(alignment: .leading) {
           buttonView(.chevronLeft24Regular, accessibility: .leftIcon, action: action)
+            .padding(.leading, Spacing.halfHorizontal)
         }
         .padding(.bottom, Spacing.custom(21))
       borderView
@@ -108,6 +109,7 @@ public struct TUIMobileOverlayHeader: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .overlay(alignment: .trailing) {
           buttonView(icon, action: action)
+            .padding(.trailing, Spacing.halfHorizontal)
         }
         .padding(.bottom, Spacing.custom(21))
       borderView
@@ -128,6 +130,7 @@ public struct TUIMobileOverlayHeader: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .overlay(alignment: .trailing) {
           buttonView(icon, menu: menu)
+            .padding(.trailing, Spacing.halfHorizontal)
         }
         .padding(.bottom, Spacing.custom(21))
       borderView
