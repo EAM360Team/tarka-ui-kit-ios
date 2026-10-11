@@ -25,7 +25,7 @@ struct SearchTextField: View {
     .toolbar(content: toolbarDoneButtonView)
     .onChange(of: focusedItem) { _, newValue in
       searchBarVM.isEditing = newValue != nil
-      guard let newValue, !newValue.isEmpty else { return }
+      guard newValue == nil else { return }
       // If search on done is enabled,
       // when focus is removed ie. keyboard hides, perform search
       guard searchBarVM.needDelaySearch else { return }
