@@ -120,3 +120,26 @@ public extension Font {
     Font.custom(font.fontVariant.name, size: font.size, relativeTo: font.textStyle)
   }
 }
+
+extension TUIFont {
+  
+  private var uiTextStyle: UIFont.TextStyle {
+    switch self {
+    case .heading1: return .largeTitle
+    case .heading2: return .title1
+    case .heading3: return .title2
+    case .heading4: return .title3
+    case .heading5, .heading6: return .headline
+    case .body5, .body6: return .body
+    case .button6: return .subheadline
+    case .heading7, .body7, .button7: return .caption1
+    case .body8, .button8: return .caption2
+    }
+  }
+  
+  public var uiFont: UIFont {
+    let font = UIFont(name: fontVariant.name, size: size)!
+    let fontMetrics = UIFontMetrics(forTextStyle: self.uiTextStyle)
+    return fontMetrics.scaledFont(for: font)
+  }
+}
