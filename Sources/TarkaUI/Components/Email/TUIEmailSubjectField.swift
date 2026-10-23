@@ -14,6 +14,7 @@ public struct TUIEmailSubjectField: View {
   private var title: String
   private var foregroundColor: Color = .outline
   private var state: TUIInputFieldState = .none
+  private var maxCharacters: Int = 0
 
   public init(text: Binding<String>, title: String = "Subject") {
     self._text = text
@@ -30,6 +31,7 @@ public struct TUIEmailSubjectField: View {
           .foregroundColor(foregroundColor)
       )
       .focused($isFocused)
+      .onChange(of: text) { _, newValue in limitText(newValue) }
       .toolbar(content: toolbarDoneButtonView)
       .font(.heading7)
       .padding(.leading, Spacing.custom(24))
@@ -53,6 +55,16 @@ public struct TUIEmailSubjectField: View {
     .accessibilityIdentifier(Accessibility.root)
   }
   
+  /// Trims the text to `maxCharacters` without splitting an emoji.
+  private func limitText(_ newValue: String) {
+    guard maxCharacters > 0, newValue.utf16.count > maxCharacters else { return }
+    var length = 0
+    text = String(newValue.prefix {
+      length += $0.utf16.count
+      return length <= maxCharacters
+    })
+  }
+
   @ToolbarContentBuilder
   private func toolbarDoneButtonView() -> some ToolbarContent {
     ToolbarItemGroup(placement: .keyboard) {
@@ -80,6 +92,13 @@ public extension TUIEmailSubjectField {
   func state(_ value: TUIInputFieldState) -> Self {
     var view = self
     view.state = value
+    return view
+  }
+
+  /// Limits the text length in UTF-16 units (emoji = 2); `0` means no limit.
+  func maxCharacters(_ limit: Int) -> Self {
+    var view = self
+    view.maxCharacters = limit
     return view
   }
 }
