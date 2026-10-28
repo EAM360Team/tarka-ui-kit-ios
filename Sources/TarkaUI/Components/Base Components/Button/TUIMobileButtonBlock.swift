@@ -30,23 +30,15 @@ public struct TUIMobileButtonBlock: View {
   
   public var body: some View {
     
-    ZStack {
+    VStack(spacing: Spacing.custom(15)) {
+      TUIDivider(
+        orientation: .horizontal(
+          hPadding: .zero, vPadding: .zero))
+      .color(.surfaceVariant)
       
-      BackgroundBlur()
-        .frame(maxWidth: .infinity)
-        .edgesIgnoringSafeArea(.bottom)
-      
-      VStack(spacing: Spacing.custom(15)) {
-        
-        TUIDivider(
-          orientation: .horizontal(
-            hPadding: .zero, vPadding: .zero))
-        .color(.surfaceVariant)
-        
-        buttonBlock
-      }
-      .background(Color.surface50)
+      buttonBlock
     }
+    .background(Color.surface50)
     .fixedSize(horizontal: false, vertical: true)
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier(Accessibility.root)
