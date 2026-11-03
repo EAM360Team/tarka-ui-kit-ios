@@ -62,21 +62,38 @@ public struct TUIAttachmentUpload: View {
         .accessibilityIdentifier(Accessibility.image)
       
     case .localImage(let url, let placeholder):
-      (computedImage ?? Image(fluent: placeholder))
-        .resizable()
-        .clipShape(RoundedRectangle(cornerRadius: Spacing.halfHorizontal))
-        .frame(width: inputStyle.imageSize.width, height: Spacing.custom(40))
-        .scaledToFill()
-        .accessibilityIdentifier(Accessibility.image)
-        .task(id: url) {
-          guard let uiImage = UIImage(
-            contentsOfFile: url.path(percentEncoded: false)) else {
-            return
-          }
-          await MainActor.run {
-            self.computedImage = Image(uiImage: uiImage)
-          }
+      Group {
+        if let computedImage {
+          computedImage
+            .resizable()
+            .clipShape(RoundedRectangle(cornerRadius: Spacing.halfHorizontal))
+            .frame(width: inputStyle.imageSize.width, height: Spacing.custom(40))
+            .scaledToFill()
+            .accessibilityIdentifier(Accessibility.image)
+        } else {
+          RoundedRectangle(cornerRadius: Spacing.halfHorizontal)
+            .fill(Color.surfaceVariant)
+            .overlay {
+              Image(fluent: placeholder)
+                .scaledToFit()
+                .frame(width: Spacing.custom(24), height: Spacing.custom(24))
+                .clipped()
+                .foregroundStyle(inputStyle.imageColor)
+            }
+            .frame(width: inputStyle.imageSize.width, height: Spacing.custom(40))
+            .accessibilityElement(children: .contain)
+            .accessibilityIdentifier(Accessibility.image)
         }
+      }
+      .task(id: url) {
+        guard let uiImage = UIImage(
+          contentsOfFile: url.path(percentEncoded: false)) else {
+          return
+        }
+        await MainActor.run {
+          self.computedImage = Image(uiImage: uiImage)
+        }
+      }
 
     case .image(let imageName):
       Image(imageName)
