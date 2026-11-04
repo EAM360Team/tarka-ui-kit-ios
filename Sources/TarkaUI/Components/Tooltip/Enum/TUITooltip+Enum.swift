@@ -65,6 +65,15 @@ public enum TUITooltipPointer: String, CaseIterable, Identifiable {
     }
   }
 
+  /// The side the pointer's inset is measured from, and the only side it is padded on.
+  var insetEdge: Edge.Set {
+    switch self {
+    case .top, .bottom: return .leading
+    case .topRight: return .trailing
+    case .left, .right: return .vertical
+    }
+  }
+
   /// `true` when the pointer is offset from a corner rather than centred on its edge.
   var isInsetFromCorner: Bool {
     isOnHorizontalEdge

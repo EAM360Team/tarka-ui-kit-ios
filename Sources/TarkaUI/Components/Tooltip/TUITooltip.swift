@@ -51,6 +51,15 @@ public struct TUITooltip: View {
     self.style = .init(items: items)
   }
 
+  /// Creates a tooltip showing one paragraph of text.
+  ///
+  /// - Parameters:
+  ///   - text: The paragraph to show
+  ///
+  public init(text: String) {
+    self.style = .init(items: [], text: text)
+  }
+
   public var body: some View {
     mainView
       .compositingGroup()
@@ -99,7 +108,7 @@ public struct TUITooltip: View {
       .frame(width: Self.pointerSize.width, height: Self.pointerSize.height)
       .rotationEffect(style.pointer.rotation)
       .frame(width: pointerFrame.width, height: pointerFrame.height)
-      .padding(pointerInsetEdge, pointerInset)
+      .padding(style.pointer.insetEdge, pointerInset)
       .frame(maxWidth: style.pointer.isOnHorizontalEdge ? .infinity : nil,
              maxHeight: style.pointer.isOnHorizontalEdge ? nil : .infinity,
              alignment: style.pointer.alignment)
@@ -113,10 +122,6 @@ public struct TUITooltip: View {
     : CGSize(width: Self.pointerSize.height, height: Self.pointerSize.width)
   }
 
-  private var pointerInsetEdge: Edge.Set {
-    style.pointer.isOnHorizontalEdge ? .horizontal : .vertical
-  }
-
   /// Distance from the pointer's edge to the start of its inset run.
   private var pointerInset: CGFloat {
     guard style.pointer.isInsetFromCorner else { return 0 }
@@ -125,7 +130,11 @@ public struct TUITooltip: View {
 
   private var cardView: some View {
     VStack(alignment: .leading, spacing: Spacing.baseHorizontal) {
-      itemsView
+      if let text = style.text {
+        textView(text)
+      } else {
+        itemsView
+      }
       errorValidationView
     }
     .padding(Spacing.baseHorizontal)
@@ -141,6 +150,16 @@ public struct TUITooltip: View {
       }
     }
     .accessibilityIdentifier(Accessibility.items)
+  }
+
+  private func textView(_ text: String) -> some View {
+    Text(text)
+      .font(.body7)
+      .foregroundColor(.onSurface)
+      .multilineTextAlignment(.leading)
+      .fixedSize(horizontal: false, vertical: true)
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .accessibilityIdentifier(Accessibility.text)
   }
 
   private func itemView(_ item: Item) -> some View {
@@ -232,6 +251,8 @@ extension TUITooltip {
 
   struct Style {
     var items: [Item]
+    /// Plain paragraph shown instead of the item list.
+    var text: String?
     var pointer: TUITooltipPointer = .topRight
 
     /// Distance from the pointer's edge to its centre, for pointers inset from a corner.
@@ -252,6 +273,7 @@ public extension TUITooltip {
     case root = "TUITooltip"
     case pointer = "TooltipPointer"
     case items = "TooltipItems"
+    case text = "TooltipText"
     case errorValidation = "TooltipErrorValidation"
   }
 }
@@ -301,6 +323,12 @@ struct TUITooltip_Previews: PreviewProvider {
     // A single item, to check the card collapses to its content.
     canvas("Single item") {
       TUITooltip([.init(title: "From Bin", value: "A-01-14")])
+    }
+
+    // One paragraph of text instead of items.
+    canvas("Text") {
+      TUITooltip(text: "When enabled, the app optimizes data downloading methods if the device runs hot. Turning this off prioritizes full data structures, though syncing and loading times will take longer under high temperatures.")
+        .pointer(.topRight)
     }
   }
 
