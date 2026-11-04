@@ -108,7 +108,7 @@ public struct TUITooltip: View {
       .frame(width: Self.pointerSize.width, height: Self.pointerSize.height)
       .rotationEffect(style.pointer.rotation)
       .frame(width: pointerFrame.width, height: pointerFrame.height)
-      .padding(pointerInsetEdge, pointerInset)
+      .padding(style.pointer.insetEdge, pointerInset)
       .frame(maxWidth: style.pointer.isOnHorizontalEdge ? .infinity : nil,
              maxHeight: style.pointer.isOnHorizontalEdge ? nil : .infinity,
              alignment: style.pointer.alignment)
@@ -120,10 +120,6 @@ public struct TUITooltip: View {
     style.pointer.isOnHorizontalEdge
     ? Self.pointerSize
     : CGSize(width: Self.pointerSize.height, height: Self.pointerSize.width)
-  }
-
-  private var pointerInsetEdge: Edge.Set {
-    style.pointer.isOnHorizontalEdge ? .horizontal : .vertical
   }
 
   /// Distance from the pointer's edge to the start of its inset run.
