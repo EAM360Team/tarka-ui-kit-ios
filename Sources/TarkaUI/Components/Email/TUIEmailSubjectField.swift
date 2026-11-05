@@ -79,6 +79,12 @@ public extension TUIEmailSubjectField {
     return view
   }
 
+  /// No-op kept so existing callers compile; the Subject field no longer shows a state.
+  @available(*, deprecated, message: "No longer styles the field; remove the call.")
+  func state(_ value: TUIInputFieldState) -> Self {
+    self
+  }
+
   /// Limits the text length in UTF-16 units (emoji = 2); `0` means no limit.
   func maxCharacters(_ limit: Int) -> Self {
     var view = self
