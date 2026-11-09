@@ -148,10 +148,9 @@ public struct TUIAppTopBar: View {
     HStack(spacing: 0) {
       
       ForEach(rightButtons) { button in
-        let index = rightButtons.firstIndex { $0.id == button.id } ?? 0
         button
           .size(.size48)
-          .accessibilityIdentifier(Accessibility.rightButton(index))
+          .accessibilityIdentifier(Accessibility.rightButton(button.id))
       }
     }
   }
@@ -178,7 +177,7 @@ extension TUIAppTopBar {
     case titleBar
     case leftButton
     case title
-    case rightButton(Int)
+    case rightButton(String)
     
     var identifier: String {
       switch self {
