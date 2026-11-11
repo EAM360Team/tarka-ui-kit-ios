@@ -148,7 +148,8 @@ public extension View {
   /// - Returns: View with background blur added
   @ViewBuilder
   func addBackgroundBlur(withColor color: Color) -> some View {
-    self.background(BackgroundVisualEffectView())
+    // Blur stretches into the safe area like the colour, so both match
+    self.background(BackgroundVisualEffectView().ignoresSafeArea())
       .background(color)
   }
   

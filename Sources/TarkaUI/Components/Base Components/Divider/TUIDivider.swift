@@ -22,7 +22,8 @@ public struct TUIDivider: View {
       .frame(width: width, height: height)
       .frame(maxWidth: maxWidth)
       .foregroundColor(.clear)
-      .background(color)
+      // A divider must not stretch into the safe area
+      .background(color, ignoresSafeAreaEdges: [])
       .padding(.horizontal, orientation.hPadding)
       .padding(.vertical, orientation.vPadding)
   }
