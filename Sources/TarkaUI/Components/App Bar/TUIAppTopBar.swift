@@ -150,7 +150,7 @@ public struct TUIAppTopBar: View {
       ForEach(rightButtons) { button in
         button
           .size(.size48)
-          .accessibilityIdentifier(Accessibility.rightButton(button.id))
+          .accessibilityIdentifier(button.accessibilityID ?? Accessibility.rightButton(button.id).identifier)
       }
     }
   }
