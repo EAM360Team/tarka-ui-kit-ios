@@ -116,6 +116,8 @@ public struct TUIAppTopBar: View {
       rightButtons(barItem.rightButtons)
     }
     .padding(.horizontal, Spacing.halfHorizontal)
+    // `.contain` first, or this ID replaces every child's ID.
+    .accessibilityElement(children: .contain)
     .accessibilityIdentifier(Accessibility.titleBar)
   }
   
