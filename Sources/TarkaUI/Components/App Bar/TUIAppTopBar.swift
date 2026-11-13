@@ -15,11 +15,12 @@ import SwiftUI
 ///
 public struct TUIAppTopBar: View {
   
-  @Environment(\.tuiSafeAreaInsets) private var safeAreaInsets
   @Environment(\.dismiss) private var dismiss
 
   var barStyle: BarStyle
   var trailingButton: TUIIconButton?
+  // Keeps the bar content clear of a status bar corner
+  var trailingInset: CGFloat
   @ObservedObject var searchBarVM: TUISearchBarViewModel
 
   private var minHeight: CGFloat {
@@ -29,24 +30,16 @@ public struct TUIAppTopBar: View {
        barItem.rightButtons.isEmpty {
       return 60
     }
-    return 64 + topPadding
-  }
-
-  private var topPadding: CGFloat {
-    
-    // It is to give extra padding for dynamic island supported devices
-    // as it has more top inset than others that causes padding issue
-    let expectedSafeArea: CGFloat = 50
-    let topInsets = safeAreaInsets.top
-    guard topInsets > expectedSafeArea else {
-      return 0
-    }
-    return topInsets - expectedSafeArea
+    // The status bar inset is added by the container, not here
+    return 64
   }
   
-  public init(barStyle: BarStyle, trailingButton: TUIIconButton? = nil) {
+  public init(barStyle: BarStyle,
+              trailingButton: TUIIconButton? = nil,
+              trailingInset: CGFloat = 0) {
     self.barStyle = barStyle
     self.trailingButton = trailingButton
+    self.trailingInset = trailingInset
     if case .search(let searchBarItem) = barStyle {
       self.searchBarVM = searchBarItem
     } else {
@@ -63,11 +56,11 @@ public struct TUIAppTopBar: View {
         .color(.surfaceVariantHover)
       
       barView
+        .padding(.trailing, trailingInset)
         .frame(
           maxWidth: .infinity,
           minHeight: minHeight - divider.height,
           alignment: .leading)
-        .padding(.top, topPadding)
 
       divider
     }
