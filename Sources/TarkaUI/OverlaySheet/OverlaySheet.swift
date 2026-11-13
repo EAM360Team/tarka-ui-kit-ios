@@ -28,7 +28,6 @@ public struct OverlaySheet<V: View>: ViewModifier {
           contentView: contentView,
           sizeClass: sizeClass
         )
-        .transparentBackground()
       }
   }
   
