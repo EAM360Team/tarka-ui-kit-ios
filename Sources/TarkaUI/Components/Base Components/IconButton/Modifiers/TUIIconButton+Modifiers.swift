@@ -56,4 +56,14 @@ public extension TUIIconButton {
     newView.menu = menu
     return newView
   }
+  
+  /// Sets a stable accessibility identifier, also used when the button sits in `TUIAppTopBar`.
+  ///
+  /// - Parameter accessibility: The identifier to use.
+  /// - Returns: A modified `TUIIconButton` with the identifier.
+  func accessibilityID(_ accessibility: TUIAccessibility) -> TUIIconButton {
+    var newView = self
+    newView.accessibilityID = accessibility.identifier
+    return newView
+  }
 }

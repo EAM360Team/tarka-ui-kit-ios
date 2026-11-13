@@ -47,6 +47,8 @@ public struct TUIIconButton: View, Identifiable {
   var size: Size = .size40
   var isDisabled: Bool = false
   var menu: [TUIContextMenuSection] = []
+  /// Stable UI-test identifier; falls back to `TUIIconButton` when `nil`.
+  public internal(set) var accessibilityID: String?
   
   /// Creates a button that displays an icon.
   ///
@@ -74,7 +76,7 @@ public struct TUIIconButton: View, Identifiable {
         style: style,
         buttonSize: buttonSize,
         isDisabled: isDisabled))
-      .accessibilityIdentifier(Accessibility.root)
+      .accessibilityIdentifier(accessibilityID ?? Accessibility.root.identifier)
   }
   
   @ViewBuilder
