@@ -10,4 +10,6 @@ import SwiftUI
 
 public extension EnvironmentValues {
   @Entry var tuiSafeAreaInsets: EdgeInsets = .init()
+  /// `true` when `TUIMobileButtonBlock` is pinned to the screen bottom, above the home indicator.
+  @Entry var tuiButtonBlockAtScreenBottom: Bool = false
 }

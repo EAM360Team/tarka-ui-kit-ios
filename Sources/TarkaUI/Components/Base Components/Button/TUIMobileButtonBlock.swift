@@ -20,6 +20,9 @@ public struct TUIMobileButtonBlock: View {
     case custom(left: TUIButton, right: TUIButton)
   }
   
+  @Environment(\.tuiSafeAreaInsets) private var safeAreaInsets
+  @Environment(\.tuiButtonBlockAtScreenBottom) private var isAtScreenBottom
+
   private var style: Style
   
   public init(style: Style) {
@@ -27,6 +30,13 @@ public struct TUIMobileButtonBlock: View {
   }
   
   private let fixedWidth: CGFloat = 342
+  private let bottomPadding: CGFloat = 15
+
+  /// At the screen bottom the home indicator already gives space, so only top it up to `bottomPadding`
+  private var effectiveBottomPadding: CGFloat {
+    guard isAtScreenBottom else { return bottomPadding }
+    return max(0, bottomPadding - safeAreaInsets.bottom)
+  }
   
   public var body: some View {
     
@@ -92,7 +102,7 @@ public struct TUIMobileButtonBlock: View {
       }
     }
     .padding(.horizontal, Spacing.custom(24))
-    .padding(.bottom, Spacing.custom(15))
+    .padding(.bottom, Spacing.custom(effectiveBottomPadding))
     .frame(maxWidth: .infinity)
   }
 }
