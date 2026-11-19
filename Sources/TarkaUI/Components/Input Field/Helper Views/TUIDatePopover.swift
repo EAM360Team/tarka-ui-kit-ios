@@ -41,26 +41,12 @@ public struct TUIDatePopover: View {
   }
   
   public var body: some View {
-    
-    ZStack {
-      transparentBackground
-      datePickerStack
-    }
-    .accessibilityElement(children: .contain)
-    .accessibilityIdentifier(Accessibility.root)
-  }
-  
-  @ViewBuilder
-  private var transparentBackground: some View {
-    VStack() {
-      EmptyView()
-    }
-    .frame(maxWidth: .infinity,
-           maxHeight: .infinity)
-    .background(Color.black.opacity(0.1))
-    .onTapGesture {
-      isShowing = false
-    }
+    datePickerStack
+      .accessibilityElement(children: .contain)
+      .accessibilityIdentifier(Accessibility.root)
+      .backgroundView(withColor: Color.black.opacity(0.5)) {
+        isShowing = false
+      }
   }
   
   @ViewBuilder
