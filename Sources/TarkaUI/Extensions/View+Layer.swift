@@ -10,6 +10,13 @@ import SwiftUI
 public extension View {
   
   @ViewBuilder
+  /// Adds black overlay background
+  /// - Returns: View
+  func blackOverlayBackground() -> some View {
+    self.presentationBackground(.black.opacity(0.5))
+  }
+  
+  @ViewBuilder
   /// Adds transparent background
   /// - Returns: View
   func transparentBackground() -> some View {
