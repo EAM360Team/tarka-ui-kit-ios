@@ -85,6 +85,8 @@ public struct TUIAppTopBar: View {
       rightButtons(barItem.rightButtons)
     }
     .padding(.horizontal, Spacing.halfHorizontal)
+    // `.contain` first, or this ID replaces every child's ID.
+    .accessibilityElement(children: .contain)
     .accessibilityIdentifier(Accessibility.titleBar)
   }
   
@@ -119,7 +121,7 @@ public struct TUIAppTopBar: View {
       ForEach(rightButtons) { button in
         button
           .size(.size48)
-          .accessibilityIdentifier(Accessibility.rightButton(button.id))
+          .accessibilityIdentifier(button.accessibilityID ?? Accessibility.rightButton(button.id).identifier)
       }
     }
   }

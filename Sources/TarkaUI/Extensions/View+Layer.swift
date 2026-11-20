@@ -15,7 +15,7 @@ public extension View {
   func blackOverlayBackground() -> some View {
     self.presentationBackground(.black.opacity(0.5))
   }
-
+  
   @ViewBuilder
   /// Adds transparent background
   /// - Returns: View
