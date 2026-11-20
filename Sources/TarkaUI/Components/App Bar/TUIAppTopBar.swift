@@ -36,7 +36,7 @@ public struct TUIAppTopBar: View {
     
     VStack(spacing: 0) {
       barView
-
+        .padding(.top, 8)
       TUIDivider(orientation: .horizontal(hPadding: .zero, vPadding: .zero))
         .color(.surfaceVariantHover)
     }
