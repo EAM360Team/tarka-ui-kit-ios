@@ -7,7 +7,6 @@
 
 import SwiftUI
 import Combine
-import SwiftUIIntrospect
 
 /// This is SwiftUI View that displays title and text content for the `TUIInputField` view in the vertical stack.
 /// The view can be customized with different styles,
@@ -18,7 +17,7 @@ struct TUIInputTextContentView: View {
   @Binding var inputItem: TUIInputFieldItem
   
   @Binding private var isTextFieldFocused: Bool
-  @FocusState private var isFocused: Bool
+  @FocusState private var focusedItem: TUIInputFieldItem?
   @Binding var isTextFieldEditingOn: Bool
 
   private var placeholder: String
@@ -66,38 +65,39 @@ struct TUIInputTextContentView: View {
     }
     .onAppear {
       if isTextFieldFocused {
-        self.isFocused = true
+        focusedItem = inputItem
       }
     }
-    .onChange(of: $isFocused.wrappedValue, perform: { value in
-      isTextFieldFocused = isFocused
+    .onChange(of: focusedItem, perform: { value in
+      isTextFieldFocused = value != nil
+      isTextFieldEditingOn = value != nil
     })
     .frame(minHeight: height)
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier(Accessibility.root)
+    .onDisappear { focusedItem = .none }
+    .toolbar(content: toolbarDoneButtonView)
   }
   
   @ViewBuilder
   private var titleView: some View {
-    
+
     let title = inputItem.title
     switch inputItem.style {
     case .onlyTitle:
-      Text(title)
+      Text(inputItem.isMandatory ? "\(title) *" : title)
         .font(.body6)
-        .foregroundColor(.inputTextDim)
         .frame(minHeight: 20)
         .frame(alignment: .leading)
         .accessibilityIdentifier(Accessibility.title)
-      
+
     case .titleWithValue:
-      Text(title)
+      Text(inputItem.isMandatory ? "\(title) *" : title)
         .font(.body8)
-        .foregroundColor(.inputTextDim)
         .frame(minHeight: 14)
         .frame(alignment: .leading)
         .accessibilityIdentifier(Accessibility.title)
-      
+
     case .onlyValue:
       EmptyView()
     }
@@ -126,30 +126,35 @@ struct TUIInputTextContentView: View {
         if isSecureField {
           SecureField(placeholder,
                       text: $inputItem.value)
+          .focused($focusedItem, equals: inputItem)
         } else {
           TextField(placeholder,
                     text: $inputItem.value,
                     axis: .vertical)
           .textFieldStyle(.plain)
+          .focused($focusedItem, equals: inputItem)
         }
-      }
-      .addDoneButtonOnKeyboard {
-        isFocused = false
       }
       .onChange(of: inputItem.value) { newValue in
         limitText(newValue)
       }
-      .onChange(of: isFocused) { newValue in
-        isTextFieldEditingOn = newValue
-      }
       .keyboardType(keyboardType)
       .lineSpacing(0)
-      .focused($isFocused)
       .multilineTextAlignment(.leading)
       .labelsHidden()
       .disabled(!isTextFieldFocused)
     } else {
       Text(inputItem.value)
+    }
+  }
+  
+  @ToolbarContentBuilder
+  private func toolbarDoneButtonView() -> some ToolbarContent {
+    if focusedItem != nil, focusedItem == inputItem {
+      ToolbarItemGroup(placement: .keyboard) {
+        Spacer()
+        Button("Done") { focusedItem = nil }
+      }
     }
   }
   

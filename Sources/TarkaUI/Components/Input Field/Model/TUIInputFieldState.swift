@@ -80,7 +80,7 @@ public enum TUIInputFieldState: Equatable {
     guard let message else { return nil }
     switch self {
     case .error:
-      return TUIHelperText(style: .error, message: message)
+      return TUIHelperText(style: .error, message: message, showIcon: false)
     case .alert:
       return TUIHelperText(style: .warning, message: message)
     case .success:

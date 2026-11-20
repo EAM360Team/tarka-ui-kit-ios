@@ -38,6 +38,9 @@ public struct TUIChip: View {
       }
     }
     .buttonStyle(ChipButtonStyle(inputItem, leading: leading, trailing: trailing))
+    .isEnabled(hasTrailingButton) {
+      $0.overlay(alignment: .trailing) { trailingButtonView }
+    }
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier(Accessibility.root)
   }
@@ -73,6 +76,9 @@ public struct TUIChip: View {
     case .titleWithButton(let icon, let action):
       titleView
       rightButtonView(icon, action: action)
+      
+    case .titleWithTrailingButton:
+      titleView
       
     case .withLeftImage(let image, rightIcon: let icon, let action):
       leftImageView(image)
@@ -170,6 +176,29 @@ public struct TUIChip: View {
       .accessibilityIdentifier(Accessibility.button)
   }
   
+  @ViewBuilder
+  private var trailingButtonView: some View {
+    if case .input(.titleWithTrailingButton(let icon, let action)) = inputItem.style {
+      Button(action: action) {
+        Image(fluent: icon)
+          .scaledToFit()
+          .frame(width: Spacing.custom(24), height: Spacing.custom(24))
+          .foregroundColor(inputItem.tintColor)
+          .padding(.trailing, Spacing.quarterHorizontal)
+          .frame(height: inputItem.size.height)
+          .contentShape(.rect)
+      }
+      .buttonStyle(.plain)
+      .accessibilityElement(children: .contain)
+      .accessibilityIdentifier(Accessibility.button)
+    }
+  }
+
+  private var hasTrailingButton: Bool {
+    if case .input(.titleWithTrailingButton) = inputItem.style { return true }
+    return false
+  }
+  
   // MARK: - Button Style
   
   struct ChipButtonStyle: ButtonStyle {
@@ -233,7 +262,7 @@ extension TUIChip {
       }
     case .input(let type):
       switch type {
-      case .titleWithButton: return Spacing.custom(0)
+      case .titleWithButton, .titleWithTrailingButton: return Spacing.custom(0)
       case .withLeftImage, .withLeftIcon: return Spacing.halfHorizontal
       }
     case .suggestion(let type):
@@ -270,7 +299,7 @@ extension TUIChip {
       }
     case .input(let type):
       switch type {
-      case .titleWithButton: return Spacing.custom(12)
+      case .titleWithButton, .titleWithTrailingButton: return Spacing.custom(12)
       case .withLeftImage: return Spacing.quarterHorizontal
       case .withLeftIcon: return inputItem.size == .size32 ? Spacing.custom(6) : Spacing.halfHorizontal
       }
@@ -300,7 +329,9 @@ extension TUIChip {
   private var trailing: CGFloat {
     switch inputItem.style {
     case .assist, .suggestion: return Spacing.baseHorizontal
-    case .input: return Spacing.custom(0)
+    case .input(let type):
+      if case .titleWithTrailingButton = type { return Spacing.custom(32) }
+      return Spacing.custom(0)
     case .filter(let type):
       switch type {
       case .onlyTitle:
@@ -455,6 +486,7 @@ public extension TUIChip {
   
   enum Input {
     case titleWithButton(FluentIcon, action: () -> Void),
+         titleWithTrailingButton(FluentIcon, action: () -> Void),
          withLeftIcon(ImageIconProtocol, rightIcon: FluentIcon, action: () -> Void),
          withLeftImage(Image, rightIcon: FluentIcon, action: () -> Void)
   }
@@ -492,6 +524,9 @@ struct TUIChip_Previews: PreviewProvider {
       Section("Input") {
         TUIChip("Input")
           .style(.input(.titleWithButton(.dismiss16Filled, action: {})), size: .size32)
+        
+        TUIChip("Input with trailing button")
+          .style(.input(.titleWithTrailingButton(.dismiss16Filled, action: {})), size: .size32)
         
         TUIChip("Input with Icon")
           .style(.input(.withLeftIcon(FluentIcon.person24Regular,

@@ -15,34 +15,11 @@ import SwiftUI
 ///
 public struct TUIAppTopBar: View {
   
-  @Environment(\.tuiSafeAreaInsets) private var safeAreaInsets
   @Environment(\.dismiss) private var dismiss
 
   var barStyle: BarStyle
   var trailingButton: TUIIconButton?
   @ObservedObject var searchBarVM: TUISearchBarViewModel
-
-  private var minHeight: CGFloat {
-    
-    if case .titleBar(let barItem) = barStyle,
-       case .none = barItem.leftButton,
-       barItem.rightButtons.isEmpty {
-      return 60
-    }
-    return 64 + topPadding
-  }
-
-  private var topPadding: CGFloat {
-    
-    // It is to give extra padding for dynamic island supported devices
-    // as it has more top inset than others that causes padding issue
-    let expectedSafeArea: CGFloat = 50
-    let topInsets = safeAreaInsets.top
-    guard topInsets > expectedSafeArea else {
-      return 0
-    }
-    return topInsets - expectedSafeArea
-  }
   
   public init(barStyle: BarStyle, trailingButton: TUIIconButton? = nil) {
     self.barStyle = barStyle
@@ -58,18 +35,10 @@ public struct TUIAppTopBar: View {
   public var body: some View {
     
     VStack(spacing: 0) {
-      
-      let divider = TUIDivider(orientation: .horizontal(hPadding: .zero, vPadding: .zero))
-        .color(.surfaceVariantHover)
-      
       barView
-        .frame(
-          maxWidth: .infinity,
-          minHeight: minHeight - divider.height,
-          alignment: .leading)
-        .padding(.top, topPadding)
-
-      divider
+        .padding(.top, 8)
+      TUIDivider(orientation: .horizontal(hPadding: .zero, vPadding: .zero))
+        .color(.surfaceVariantHover)
     }
     .background(Color.surface)
     .accessibilityElement(children: .contain)
@@ -116,6 +85,8 @@ public struct TUIAppTopBar: View {
       rightButtons(barItem.rightButtons)
     }
     .padding(.horizontal, Spacing.halfHorizontal)
+    // `.contain` first, or this ID replaces every child's ID.
+    .accessibilityElement(children: .contain)
     .accessibilityIdentifier(Accessibility.titleBar)
   }
   
@@ -148,10 +119,9 @@ public struct TUIAppTopBar: View {
     HStack(spacing: 0) {
       
       ForEach(rightButtons) { button in
-        let index = rightButtons.firstIndex { $0.id == button.id } ?? 0
         button
           .size(.size48)
-          .accessibilityIdentifier(Accessibility.rightButton(index))
+          .accessibilityIdentifier(button.accessibilityID ?? Accessibility.rightButton(button.id).identifier)
       }
     }
   }
@@ -178,7 +148,7 @@ extension TUIAppTopBar {
     case titleBar
     case leftButton
     case title
-    case rightButton(Int)
+    case rightButton(String)
     
     var identifier: String {
       switch self {

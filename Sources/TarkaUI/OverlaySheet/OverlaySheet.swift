@@ -12,8 +12,8 @@ import SwiftUI
 public struct OverlaySheet<V: View>: ViewModifier {
   
   @Binding var isPresented: Bool
-  @Environment(\.horizontalSizeClass) var sizeClass
   private var contentView: () -> V
+  private let isPad = UIDevice.current.userInterfaceIdiom == .pad
   
   public init(isPresented: Binding<Bool>, contentView: @autoclosure @escaping () -> V) {
     _isPresented = isPresented
@@ -26,9 +26,8 @@ public struct OverlaySheet<V: View>: ViewModifier {
         DestinationView(
           isPresented: $isPresented,
           contentView: contentView,
-          sizeClass: sizeClass
+          needColor: !isPad
         )
-        .transparentBackground()
       }
   }
   
@@ -36,11 +35,11 @@ public struct OverlaySheet<V: View>: ViewModifier {
     
     @Binding var isPresented: Bool
     var contentView: () -> V
-    var sizeClass: UserInterfaceSizeClass?
+    var needColor: Bool = false
     
     var body: some View {
       contentView()
-        .backgroundView(withColor: sizeClass == .compact ? .surface : .clear) {
+        .backgroundView(withColor: needColor ? .surface : .clear) {
           isPresented = false
         }
     }

@@ -26,7 +26,9 @@ public struct TUIEmailField: View {
   public var emails: [String] = []
   public var addAction: () -> Void
   public var removeAction: (String) -> Void
-  
+
+  private var foregroundColor: Color = .outline
+
   @State private var emailGridWidth: CGFloat = 0.0
   
   public init(
@@ -61,7 +63,7 @@ public struct TUIEmailField: View {
   private var labelView: some View {
     Text(label.title)
       .font(.body7)
-      .foregroundColor(.outline)
+      .foregroundColor(foregroundColor)
       .padding(.top, 15)
       .padding(.leading, 24)
       .accessibilityIdentifier(Accessibility.label)
@@ -118,6 +120,18 @@ public struct TUIEmailField: View {
     .size(.size48)
     .padding(.trailing, 8)
     .accessibilityIdentifier(Accessibility.addButton)
+  }
+}
+
+public extension TUIEmailField {
+
+  /// Overrides the color used to render the title.
+  /// - Parameter color: The color to apply to the title. Defaults to `.outline`.
+  /// - Returns: A `TUIEmailField` updated with the given title color.
+  func foregroundColor(_ color: Color) -> Self {
+    var view = self
+    view.foregroundColor = color
+    return view
   }
 }
 

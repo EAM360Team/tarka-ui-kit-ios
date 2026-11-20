@@ -39,6 +39,7 @@ public enum TUIIcon: String, ImageIconProtocol {
   
   case checkBoxChecked = "checkbox_checked"
   case checkBoxUnChecked = "checkbox_unchecked"
+  case checkBoxMixed = "checkbox_mixed"
 }
 
 // MARK: - FluentIcon

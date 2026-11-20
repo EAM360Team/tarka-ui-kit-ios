@@ -23,7 +23,7 @@ public extension TUIAppTopBar {
   
   struct TitleBarItem {
     
-    var title: String?
+    public var title: String?
     var attributedTitle: AttributedString?
     var bottom: BottomContent
     var leftButton: LeftButton

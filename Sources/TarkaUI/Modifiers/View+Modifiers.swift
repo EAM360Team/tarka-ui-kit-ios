@@ -75,12 +75,16 @@ public extension View {
   func navigationTextRow(
     _ title: String,
     style: TUITextRow.Style,
+    textColor: Color = .onSurface,
+    isMandatory: Bool = false,
     destinationView: @autoclosure @escaping () -> some View,
     accessibilityID: TUIAccessibility,
     isEnabled: Bool = true,
     @TUIIconButtonBuilder
     iconButtons: @escaping (() -> [TUIIconButton]?) = { nil }) -> some View {
       let textRow = TUITextRow(title, style: style)
+        .textColor(textColor)
+        .isMandatory(isMandatory)
       
       if isEnabled {
         NavigationLink(destination: destinationView, label: {
