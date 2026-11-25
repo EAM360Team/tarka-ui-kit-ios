@@ -68,10 +68,10 @@ struct TUIInputTextContentView: View {
         focusedItem = inputItem
       }
     }
-    .onChange(of: focusedItem, perform: { value in
+    .onChange(of: focusedItem) { _, value in
       isTextFieldFocused = value != nil
       isTextFieldEditingOn = value != nil
-    })
+    }
     .frame(minHeight: height)
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier(Accessibility.root)
@@ -135,7 +135,7 @@ struct TUIInputTextContentView: View {
           .focused($focusedItem, equals: inputItem)
         }
       }
-      .onChange(of: inputItem.value) { newValue in
+      .onChange(of: inputItem.value) { _, newValue in
         limitText(newValue)
       }
       .keyboardType(keyboardType)

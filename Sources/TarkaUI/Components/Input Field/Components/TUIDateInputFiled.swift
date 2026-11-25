@@ -63,7 +63,7 @@ public struct TUIDateInputField: TUIInputFieldProtocol {
       self.isDateSelected = false
       self.isSheetPresented = true
     }, rightButtonAction: rightButtonAction)
-    .onChange(of: isDateSelected) { newValue in
+    .onChange(of: isDateSelected) { _, newValue in
       guard newValue else { return }
       let dateString = date?.formatted(dateInputItem.format) ?? ""
       self.inputItem.value = dateString
@@ -71,7 +71,7 @@ public struct TUIDateInputField: TUIInputFieldProtocol {
       self.dateInputItem.date = date
     }
     // without a below line of code, date can not receive updates. Weird one. For now, we go with this hack.
-    .onChange(of: date) { _ in }
+    .onChange(of: date) { }
     .fullScreenCover(
       isPresented: $isSheetPresented,
       content: {
