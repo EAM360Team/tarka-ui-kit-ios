@@ -58,28 +58,28 @@ public struct TUITextInputField: TUIInputFieldProtocol {
   
   public var body: some View {
     mainBody
-      .onChange(of: dismissTextFocus, perform: { value in
+      .onChange(of: dismissTextFocus) { _, value in
         if value {
           isFocused = false
           removeWhiteSpaces()
           resetStyle()
         }
-      })
-      .onChange(of: isFocused, perform: { value in
+      }
+      .onChange(of: isFocused) {
         if !isFocused {
           // revert the dismissTextFocus to receive updates at `onChange`
           dismissTextFocus = false
         }
         isObservableFocused = isFocused
-      })
-      .onChange(of: isEditingOn, perform: { value in
+      }
+      .onChange(of: isEditingOn) { _, value in
         // used when switching between text fields
         if !value {
           removeWhiteSpaces()
           resetStyle()
         }
-      })
-      .onChange(of: inputItem.value) { _ in
+      }
+      .onChange(of: inputItem.value) {
         resetStyle()
       }
   }
